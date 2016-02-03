@@ -2,6 +2,8 @@
  
 Native interface to sqlite in a Cordova/PhoneGap plugin for Android, iOS~~, and Windows "Universal" (8.1)~~ with API similar to HTML5/[Web SQL API](http://www.w3.org/TR/webdatabase/).
 
+This version includes memory improvements for Android and iOS.
+
 This version is available under GPL v3 (http://www.gnu.org/licenses/gpl.txt) or commercial license. Contact for commercial license: info@litehelpers.net
 
 NOTE (TBD): no Circle CI or Travis CI working in this version branch.
@@ -275,6 +277,8 @@ By default, this plugin uses [Android-sqlite-connector](https://github.com/liteg
 ```js
 var db = window.sqlitePlugin.openDatabase({name: "my.db", androidDatabaseImplementation: 2});
 ```
+
+**NOTE:** The internal memory improvements do *not* apply to the use of the built-in Android database classes.
 
 ### Workaround for Android db locking issue
 

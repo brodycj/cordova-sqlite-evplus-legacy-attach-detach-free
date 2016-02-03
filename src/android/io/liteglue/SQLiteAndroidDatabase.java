@@ -86,7 +86,7 @@ class SQLiteAndroidDatabase
      * @param dbname     The name of the database.
      * @param queryarr   Array of query strings
      * @param jsonparams Array of JSON query parameters
-     * @param queryIDs   Array of query ids
+     * @param queryIDs   IGNORED: Array of query ids
      * @param cbc        Callback context from Cordova API
      */
     @SuppressLint("NewApi")
@@ -100,14 +100,14 @@ class SQLiteAndroidDatabase
         }
 
         String query = "";
-        String query_id = "";
+        //String query_id = "";
         int len = queryarr.length;
         JSONArray batchResults = new JSONArray();
 
         for (int i = 0; i < len; i++) {
             int rowsAffectedCompat = 0;
             boolean needRowsAffectedCompat = false;
-            query_id = queryIDs[i];
+            //query_id = queryIDs[i];
 
             JSONObject queryResult = null;
             String errorMessage = "unknown";
@@ -245,7 +245,7 @@ class SQLiteAndroidDatabase
             try {
                 if (queryResult != null) {
                     JSONObject r = new JSONObject();
-                    r.put("qid", query_id);
+                    //r.put("qid", query_id);
 
                     r.put("type", "success");
                     r.put("result", queryResult);
@@ -253,7 +253,7 @@ class SQLiteAndroidDatabase
                     batchResults.put(r);
                 } else {
                     JSONObject r = new JSONObject();
-                    r.put("qid", query_id);
+                    //r.put("qid", query_id);
                     r.put("type", "error");
 
                     JSONObject er = new JSONObject();
