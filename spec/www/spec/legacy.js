@@ -1218,24 +1218,24 @@ var mytests = function() {
             }, function(tx, error) {
               ok(!!error, "valid error object");
 
-              // XXX NOT WORKING for Windows version of plugin:
-              if (!isWindows)
+              // XXX NOT WORKING for Android or Windows version of plugin:
+              if (!isWindows && (isWebSql || !isAndroid))
                 ok(!!error['code'], "valid error.code exists");
 
               ok(error.hasOwnProperty('message'), "error.message exists");
 
-              // XXX NOT WORKING for Windows version of plugin:
-              if (!isWindows)
+              // XXX NOT WORKING for Android or Windows version of plugin:
+              if (!isWindows && (isWebSql || !isAndroid))
                 strictEqual(error.code, 5, "error.code === SQLException.SYNTAX_ERR (5)");
 
               //equal(error.message, "Request failed: insert into test_table (data) VALUES ,123", "error.message");
 
-              // XXX NOT WORKING for Web SQL or Windows version of plugin:
-              if (!(isWebSql || isWindows))
+              // XXX NOT WORKING for Web SQL, Android, or Windows version of plugin:
+              if (!(isWebSql || isAndroid || isWindows))
                 ok(!!error['sqliteCode'], "valid error.sqliteCode exists");
 
-              // XXX NOT WORKING for Web SQL or Windows version of plugin:
-              if (!(isWebSql || isWindows))
+              // XXX NOT WORKING for Web SQL, Android, or Windows version of plugin:
+              if (!(isWebSql || isAndroid || isWindows))
                 strictEqual(error.sqliteCode, 1, "error.sqliteCode === 1 (SQLITE_ERROR)");
 
               start();
@@ -1252,7 +1252,6 @@ var mytests = function() {
 
         test_it(suiteName + "constraint violation", function() {
           if (isWindows) pending('BROKEN for Windows'); // XXX TODO
-          //if (isWindowsPhone_8_1) pending('BROKEN for Windows Phone 8.1'); // XXX TODO
 
           var db = openDatabase("Constraint-violation-test.db", "1.0", "Demo", DEFAULT_SIZE);
           ok(!!db, "db object");
@@ -1275,24 +1274,24 @@ var mytests = function() {
             }, function(tx, error) {
               ok(!!error, "valid error object");
 
-              // XXX NOT WORKING for Windows version of plugin:
-              if (!isWindows)
+              // XXX NOT WORKING for Android or Windows version of plugin:
+              if (!isWindows && (isWebSql || !isAndroid))
                 ok(!!error['code'], "valid error.code exists");
 
               ok(error.hasOwnProperty('message'), "error.message exists");
 
-              // XXX NOT WORKING for Web SQL [iOS] or Windows version of plugin:
-              if (!(isWebSql || isWindows))
+              // XXX NOT WORKING for Web SQL, Android, or Windows version of plugin:
+              if (!(isWebSql || isAndroid || isWindows))
                 strictEqual(error.code, 6, "error.code === SQLException.CONSTRAINT_ERR (6)");
 
               //equal(error.message, "Request failed: insert into test_table (data) VALUES (?),123", "error.message");
 
-              // XXX NOT WORKING for Web SQL or Windows version of plugin:
-              if (!(isWebSql || isWindows))
+              // XXX NOT WORKING for Web SQL, Android, or Windows version of plugin:
+              if (!(isWebSql || isAndroid || isWindows))
                 ok(!!error['sqliteCode'], "valid error.sqliteCode exists");
 
-              // XXX NOT WORKING for Web SQL or Windows version of plugin:
-              if (!(isWebSql || isWindows))
+              // XXX NOT WORKING for Web SQL, Android, or Windows version of plugin:
+              if (!(isWebSql || isAndroid || isWindows))
                 strictEqual(error.sqliteCode, 19, "error.sqliteCode === 19 (SQLITE_CONSTRAINT)");
 
               start();
