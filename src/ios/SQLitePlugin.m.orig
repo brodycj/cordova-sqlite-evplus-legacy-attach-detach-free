@@ -124,8 +124,6 @@ sqlite_regexp(sqlite3_context * context, int argc, sqlite3_value ** values) {
         @synchronized(self) {
             if ([command.methodName isEqualToString: @"open"])
                 [self openNow: command];
-            else if ([command.methodName isEqualToString: @"attach"])
-                [self attachNow: command];
             else if ([command.methodName isEqualToString: @"close"])
                 [self closeNow: command];
             else if ([command.methodName isEqualToString: @"delete"])
@@ -311,70 +309,6 @@ sqlite_regexp(sqlite3_context * context, int argc, sqlite3_value ** values) {
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
--(void) attach: (CDVInvokedUrlCommand*)command
-{
-    [self.commandDelegate runInBackground:^{
-        [self executeInBackground: command];
-    }];
-}
-
--(void) attachNow: (CDVInvokedUrlCommand*)command
-{
-    CDVPluginResult* pluginResult = nil;
-    NSMutableDictionary *options = [command.arguments objectAtIndex:0];
-
-    NSString *dbFileName1 = [options objectForKey:@"dbname1"];
-
-    // FUTURE TODO TODO:
-    //NSString *dblocation = [options objectForKey:@"dblocation"];
-    //if (dblocation == NULL) dblocation = @"docs";
-
-    NSString *dbFileName2 = [options objectForKey:@"dbname2"];
-
-    NSString *alias = [options objectForKey:@"alias"];
-
-    if (dbFileName1 == NULL) {
-        // Should not happen:
-        NSLog(@"No db name specified for attach");
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"You must specify database path"];
-    } else if (dbFileName2 == NULL) {
-        // Should not happen:
-        NSLog(@"No db name specified to attach to");
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"You must specify database path"];
-    } else {
-        NSValue *val = [openDBs objectForKey:dbFileName1];
-        sqlite3 *db = [val pointerValue];
-
-    NSString *dblocation = [options objectForKey:@"dblocation"];
-    if (dblocation == NULL) dblocation = @"docs";
-
-    NSString *dbname = [self getDBPath:dbFileName2 at:dblocation];
-
-        if (db == NULL) {
-            // Should not happen:
-            NSLog(@"attach: db name was not open: %@", dbFileName1);
-
-            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Specified db was not open"];
-        }
-        else {
-            // XXX FUTURE TBD should bind db file name as parameter instead:
-
-            //NSString * attachCommand = [NSString stringWithFormat:@"ATTACH ? AS %@", alias];
-            NSString * attachCommand = [NSString stringWithFormat:@"ATTACH \"%@\" AS %@", dbname, alias];
-
-            if(sqlite3_exec(db, [attachCommand UTF8String], NULL, NULL, NULL) == SQLITE_OK) {
-                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Attach OK"];
-            } else {
-                // XXX TBD report error??
-                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Attach failed"];
-            }
-        }
-    }
-
-
-
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-}
 
 -(void) flatSqlBatch: (CDVInvokedUrlCommand*)command
 {

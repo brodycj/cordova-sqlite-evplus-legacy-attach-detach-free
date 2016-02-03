@@ -54,6 +54,7 @@ I raised [Cordova bug CB-9830](https://issues.apache.org/jira/browse/CB-9830) to
 
 ## Announcements
 
+- ATTACH is now supported as described below.
 - Pre-populated database support for Android, iOS, ~~and Windows "Universal" (_broken_)~~, usage described below
 - REGEXP is now supported for Android and iOS platforms.
 - This version has the following improvement(s):
@@ -501,6 +502,19 @@ function onDeviceReady() {
 ```
 
 This case will also works with Safari (WebKit), assuming you replace `window.sqlitePlugin.openDatabase` with `window.openDatabase`.
+
+## Attach to another database
+
+To attach to another database in the default location:
+
+```Javascript
+db.attach('alias_name', 'dbfilename', optionalSuccessCallback, optionalErrorCallback);
+```
+
+TBD missing issue(s):
+
+- It is currently not possible to attach to a database installed in another location using `location: 1` or `location: 2`.
+- DETACH is missing
 
 ## Close a database object
 

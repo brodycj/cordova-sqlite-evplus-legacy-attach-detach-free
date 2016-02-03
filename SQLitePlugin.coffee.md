@@ -130,6 +130,21 @@
 
     SQLitePlugin::a1map = {}
 
+    SQLitePlugin::attach = (alias, dbname, successcb, errorcb) ->
+      args =
+        dbname1: @dbname
+        dbname2: dbname
+        alias: alias
+        
+      cordova.exec successcb, errorcb, "SQLitePlugin", "attach", [args]
+
+    SQLitePlugin::detach = (alias, successcb, errorcb) ->
+      args =
+        dbname1: @dbname
+        alias: alias
+        
+      cordova.exec successcb, errorcb, "SQLitePlugin", "detach", [args]
+
     SQLitePlugin::addTransaction = (t) ->
       if !txLocks[@dbname]
         txLocks[@dbname] = {

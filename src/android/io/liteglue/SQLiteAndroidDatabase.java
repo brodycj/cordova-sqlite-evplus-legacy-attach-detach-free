@@ -65,6 +65,25 @@ class SQLiteAndroidDatabase
         mydb = SQLiteDatabase.openOrCreateDatabase(dbfile, null);
     }
 
+    void attachDatabaseNow(File dbfile2, String alias, CallbackContext cbc) {
+        try {
+            // THANKS for guidance:
+            // http://stackoverflow.com/questions/20133760/attach-sqlite-database-in-android-with-sqliteopenhelper
+            this.mydb.execSQL("ATTACH ? AS " + alias, new String[]{ dbfile2.getAbsolutePath() });
+
+            Cursor cur = this.mydb.rawQuery("SELECT * FROM " + alias + ".sqlite_master", null);
+
+            if (cur == null) {
+                cbc.error("ATTACH did not work");
+            } else {
+                cur.close();
+                cbc.success();
+            }
+        } catch(Exception ex) {
+            cbc.error("ATTACH exception: " + ex.getMessage());
+        }
+    }
+
     /**
      * Close a database (in the current thread).
      */

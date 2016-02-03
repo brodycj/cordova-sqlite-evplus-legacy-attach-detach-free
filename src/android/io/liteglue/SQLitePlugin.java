@@ -82,6 +82,8 @@ public class SQLitePlugin extends CordovaPlugin {
         boolean status = true;
         JSONObject o;
         String dbname;
+        String dbname2;
+        String alias;
 
         switch (action) {
             case open:
@@ -89,6 +91,14 @@ public class SQLitePlugin extends CordovaPlugin {
                 dbname = o.getString("name");
                 // open database and start reading its queue
                 this.startDatabase(dbname, o, cbc);
+                break;
+
+            case attach:
+                o = args.getJSONObject(0);
+                dbname = o.getString("dbname1");
+                dbname2 = o.getString("dbname2");
+                alias = o.getString("alias");
+                this.attachDatabase(dbname, dbname2, alias, cbc);
                 break;
 
             case close:
@@ -366,6 +376,27 @@ public class SQLitePlugin extends CordovaPlugin {
         }
     }
 
+    private void attachDatabase(String dbname1, String dbname2, String alias, CallbackContext cbc) {
+                //cbc.error("sorry not implemented");
+//* ** {{
+        DBRunner r = dbrmap.get(dbname1);
+        if (r != null) {
+            try {
+                r.q.put(new DBQuery(Action.attach, dbname2, alias, cbc));
+            } catch(Exception e) {
+                if (cbc != null) {
+                    cbc.error("couldn't attach database" + e);
+                }
+                Log.e(SQLitePlugin.class.getSimpleName(), "couldn't attach database", e);
+            }
+        } else {
+            if (cbc != null) {
+                cbc.error("sorry db not open");
+            }
+        }
+// ** }} */
+    }
+
     /**
      * Close a database (in another thread).
      *
@@ -469,6 +500,11 @@ public class SQLitePlugin extends CordovaPlugin {
       void open(File dbFile) throws Exception {
         mydb = connector.newSQLiteConnection(dbFile.getAbsolutePath(),
           SQLiteOpenFlags.READWRITE | SQLiteOpenFlags.CREATE);
+      }
+
+      @Override
+      void attachDatabaseNow(File dbname2, String alias, CallbackContext cbc) {
+        cbc.error("Sorry ATTACH not implemented for default db implementation");
       }
 
       /**
@@ -875,10 +911,19 @@ public class SQLitePlugin extends CordovaPlugin {
                 dbq = q.take();
 
                 while (!dbq.stop) {
-                  if (!oldImpl)
-                    mydb1.flatSqlBatch(dbq.queries, dbq.flatlist, dbq.cbc);
-                  else
-                    mydb.executeSqlBatch(dbq.queries, dbq.jsonparams, null, dbq.cbc);
+                    if (dbq.attach) {
+                        File dbfile2 = cordova.getActivity().getDatabasePath(dbq.dbname2);
+
+                        if (dbfile2.exists() && mydb != null) {
+                            mydb.attachDatabaseNow(dbfile2, dbq.alias, dbq.cbc);
+                        } else {
+                            dbq.cbc.error("Sorry db file does not exist to ATTACH");
+                        }
+                    } else if (!oldImpl) {
+                        mydb1.flatSqlBatch(dbq.queries, dbq.flatlist, dbq.cbc);
+                    } else {
+                        mydb.executeSqlBatch(dbq.queries, dbq.jsonparams, null, dbq.cbc);
+                    }
 
                     // NOTE: androidLock[Bug]Workaround is not necessary and IGNORED for sqlite4java (NDK version).
                     if (this.bugWorkaround && dbq.queries.length == 1 && dbq.queries[0] == "COMMIT")
@@ -928,6 +973,9 @@ public class SQLitePlugin extends CordovaPlugin {
         final boolean stop;
         final boolean close;
         final boolean delete;
+        final boolean attach;
+        final String dbname2;
+        final String alias;
         final String[] queries;
         final JSONArray[] jsonparams;
         final JSONArray flatlist;
@@ -938,6 +986,9 @@ public class SQLitePlugin extends CordovaPlugin {
             this.stop = false;
             this.close = false;
             this.delete = false;
+            this.attach = false;
+            this.dbname2 = null;
+            this.alias = null;
             this.queries = myqueries;
             this.jsonparams = params;
             this.flatlist = null;
@@ -949,6 +1000,9 @@ public class SQLitePlugin extends CordovaPlugin {
             this.stop = false;
             this.close = false;
             this.delete = false;
+            this.attach = false;
+            this.dbname2 = null;
+            this.alias = null;
             this.queries = myqueries;
             this.jsonparams = null;
             this.flatlist = flatlist;
@@ -960,10 +1014,31 @@ public class SQLitePlugin extends CordovaPlugin {
             this.stop = true;
             this.close = true;
             this.delete = delete;
+            this.attach = false;
+            this.dbname2 = null;
+            this.alias = null;
             this.queries = null;
             this.jsonparams = null;
             this.flatlist = null;
             this.cbc = cbc;
+        }
+
+        DBQuery(Action action, String dbname2, String alias, CallbackContext cbc) {
+            if (action == Action.attach) {
+                this.is_flat = false;
+                this.stop = false;
+                this.close = false;
+                this.delete = false;
+                this.attach = true;
+                this.dbname2 = dbname2;
+                this.alias = alias;
+                this.queries = null;
+                this.jsonparams = null;
+                this.flatlist = null;
+                this.cbc = cbc;
+            } else {
+                throw new RuntimeException("Sorry bad arguments");
+            }
         }
 
         // signal the DBRunner thread to stop:
@@ -972,6 +1047,9 @@ public class SQLitePlugin extends CordovaPlugin {
             this.stop = true;
             this.close = false;
             this.delete = false;
+            this.attach = true;
+            this.dbname2 = null;
+            this.alias = null;
             this.queries = null;
             this.jsonparams = null;
             this.flatlist = null;
@@ -981,6 +1059,8 @@ public class SQLitePlugin extends CordovaPlugin {
 
     private static enum Action {
         open,
+        attach,
+        detach,
         close,
         delete,
         executeSqlBatch,

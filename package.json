@@ -1,9 +1,9 @@
 {
-  "name": "cordova-sqlite-evfree-eval-xxx",
+  "name": "cordova-sqlite-evfree-attach-eval",
   "version": "0.8.0-evfree-eval-xxx",
-  "description": "Native interface to SQLite for PhoneGap/Cordova with extras",
+  "description": "Native interface to SQLite for PhoneGap/Cordova with ATTACH (evaluation)",
   "cordova": {
-    "id": "cordova-sqlite-evfree-eval-xxx",
+    "id": "cordova-sqlite-evfree-attach-eval",
     "platforms": [
       "android",
       "ios",
@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/litehelpers/cordova-sqlite-extras.git"
+    "url": "https://github.com/litehelpers/cordova-sqlite-ext.git"
   },
   "keywords": [
     "sqlite",

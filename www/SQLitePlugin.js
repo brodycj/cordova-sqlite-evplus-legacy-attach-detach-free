@@ -107,6 +107,25 @@ Contact for commercial license: info@litehelpers.net
 
   SQLitePlugin.prototype.a1map = {};
 
+  SQLitePlugin.prototype.attach = function(alias, dbname, successcb, errorcb) {
+    var args;
+    args = {
+      dbname1: this.dbname,
+      dbname2: dbname,
+      alias: alias
+    };
+    return cordova.exec(successcb, errorcb, "SQLitePlugin", "attach", [args]);
+  };
+
+  SQLitePlugin.prototype.detach = function(alias, successcb, errorcb) {
+    var args;
+    args = {
+      dbname1: this.dbname,
+      alias: alias
+    };
+    return cordova.exec(successcb, errorcb, "SQLitePlugin", "detach", [args]);
+  };
+
   SQLitePlugin.prototype.addTransaction = function(t) {
     if (!txLocks[this.dbname]) {
       txLocks[this.dbname] = {

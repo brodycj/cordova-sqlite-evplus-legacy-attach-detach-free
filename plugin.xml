@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    id="cordova-sqlite-evfree-eval-xxx"
-    version="0.8.0-evfree-eval-xxx">
+    id="cordova-sqlite-evfree-attach-eval"
+    version="0.8.0-evfree-attach-eval">
 
-    <name>Cordova sqlite storage plugin with extras</name>
+    <name>Cordova sqlite storage plugin with ATTACH (evaluation)</name>
 
     <license>MIT</license>
 
