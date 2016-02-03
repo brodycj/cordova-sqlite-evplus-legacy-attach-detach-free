@@ -596,7 +596,7 @@
 
         return
 
-      cordova.exec mycb, null, "SQLitePlugin", "backgroundExecuteSqlBatch",
+      cordova.exec mycb, null, "SQLitePlugin", "flatSqlBatch",
         [{dbargs: {dbname: @db.dbname}, flen: batchExecutes.length, flatlist: flatlist}]
 
       return

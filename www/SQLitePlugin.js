@@ -573,7 +573,7 @@ Contact for commercial license: info@litehelpers.net
         ++i;
       }
     };
-    cordova.exec(mycb, null, "SQLitePlugin", "backgroundExecuteSqlBatch", [
+    cordova.exec(mycb, null, "SQLitePlugin", "flatSqlBatch", [
       {
         dbargs: {
           dbname: this.db.dbname

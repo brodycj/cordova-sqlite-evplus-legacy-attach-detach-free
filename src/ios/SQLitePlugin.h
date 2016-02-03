@@ -42,6 +42,9 @@ typedef int WebSQLError;
 -(void) deleteNow: (CDVInvokedUrlCommand*)command;
 
 // Batch processing interface
+-(void) flatSqlBatch: (CDVInvokedUrlCommand*)command;
+
+// DEPRECATED alias:
 -(void) backgroundExecuteSqlBatch: (CDVInvokedUrlCommand*)command;
 
 -(void) executeSqlBatchNow: (CDVInvokedUrlCommand*)command;

@@ -128,6 +128,8 @@ sqlite_regexp(sqlite3_context * context, int argc, sqlite3_value ** values) {
                 [self closeNow: command];
             else if ([command.methodName isEqualToString: @"delete"])
                 [self deleteNow: command];
+            else if ([command.methodName isEqualToString: @"flatSqlBatch"])
+                [self executeSqlBatchNow: command];
             else if ([command.methodName isEqualToString: @"backgroundExecuteSqlBatch"])
                 [self executeSqlBatchNow: command];
         }
@@ -308,6 +310,14 @@ sqlite_regexp(sqlite3_context * context, int argc, sqlite3_value ** values) {
 }
 
 
+-(void) flatSqlBatch: (CDVInvokedUrlCommand*)command
+{
+    [self.commandDelegate runInBackground:^{
+        [self executeSqlBatchNow: command];
+    }];
+}
+
+// DEPRECATED alias:
 -(void) backgroundExecuteSqlBatch: (CDVInvokedUrlCommand*)command
 {
     [self.commandDelegate runInBackground:^{

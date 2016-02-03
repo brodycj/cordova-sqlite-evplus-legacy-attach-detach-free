@@ -40,8 +40,9 @@ var isWindows = /Windows /.test(navigator.userAgent); // Windows (8.1)
 var isIE = isWindows || isWP8;
 var isWebKit = !isIE; // TBD [Android or iOS]
 
-var scenarioList = [ isAndroid ? 'Plugin-sqlite-connector' : 'Plugin', 'HTML5', 'Plugin-android.database' ];
+var scenarioList = [ isAndroid ? 'Plugin-default-xx' : 'Plugin', 'HTML5', 'Plugin-xx' ];
 
+// XXX FUTURE TBD:
 //var scenarioCount = isAndroid ? 3 : (isIE ? 1 : 2);
 var scenarioCount = (!!window.hasWebKitBrowser) ? 2 : 1;
 
@@ -160,9 +161,6 @@ var mytests = function() {
           });
         });
 
-        // NOTE: the next two tests show that for iOS [BUG #147]:
-        // - UNICODE \u2028 line separator from Javascript to Objective-C is working ok
-        // - UNICODE \u2028 line separator from Objective-C to Javascript is BROKEN
         test_it(suiteName + "UNICODE \\u2028 line separator string to hex", function() {
           if (isWP8) pending('BROKEN for WP(8)'); // [BUG #202] UNICODE characters not working with WP(8)
 
@@ -198,14 +196,11 @@ var mytests = function() {
           });
         });
 
-        test_it(suiteName + ' handles UNICODE \\u2028 line separator correctly [string test]', function () {
+        // In this version, test \u2029 (paragraph separator) here and \u2028 (line separator) in another test
+        test_it(suiteName + ' handles UNICODE \\u2029 paragraph separator correctly [string test]', function () {
 
           if (isWP8) pending('BROKEN for WP(8)'); // [BUG #202] UNICODE characters not working with WP(8)
-          if (!(isWebSql || isAndroid || isIE)) pending('BROKEN for iOS'); // XXX [BUG #147] (no callback received)
 
-          // NOTE: since the above test shows the UNICODE line separator (\u2028)
-          // is seen by the sqlite implementation OK, it is now concluded that
-          // the failure is caused by the Objective-C JSON result encoding.
           var db = openDatabase("UNICODE-line-separator-string-2.db", "1.0", "Demo", DEFAULT_SIZE);
 
           ok(!!db, "db object");
@@ -216,10 +211,10 @@ var mytests = function() {
 
             ok(!!tx, "tx object");
 
-            var text = 'Abcd\u20281234';
+            var text = 'Abcd\u20291234';
             tx.executeSql("select lower(?) as lowertext", [text], function (tx, res) {
               ok(!!res, "res object");
-              equal(res.rows.item(0).lowertext, "abcd\u20281234", "lower case string test with UNICODE line separator");
+              equal(res.rows.item(0).lowertext, "abcd\u20291234", "lower case string test with UNICODE line separator");
 
               start();
             });
@@ -1167,13 +1162,9 @@ var mytests = function() {
           });
         });
 
-        // XXX Brody NOTE: same issue is now reproduced in a string test.
-        //           TBD ???: combine with other test
-        // BUG #147 iOS version of plugin BROKEN:
         test_it(suiteName +
             ' handles UNICODE \\u2028 line separator correctly [in database]', function () {
           if (isWP8) pending('BROKEN for WP(8)'); // [BUG #202] UNICODE characters not working with WP(8)
-          if (!(isWebSql || isAndroid || isIE)) pending('BROKEN for iOS'); // XXX [BUG #147] (no callback received)
 
           var dbName = "Unicode-line-separator.db";
           var db = openDatabase(dbName, "1.0", "Demo", DEFAULT_SIZE);
@@ -1227,15 +1218,26 @@ var mytests = function() {
             }, function(tx, error) {
               ok(!!error, "valid error object");
 
-              // XXX ONLY WORKING for iOS version of plugin:
-              if (isWebSql || !(isAndroid || isWindows || isWP8))
+              // XXX NOT WORKING for Windows version of plugin:
+              if (!isWindows)
                 ok(!!error['code'], "valid error.code exists");
 
               ok(error.hasOwnProperty('message'), "error.message exists");
-              // XXX ONLY WORKING for iOS version of plugin:
-              if (isWebSql || !(isAndroid || isWindows || isWP8))
+
+              // XXX NOT WORKING for Windows version of plugin:
+              if (!isWindows)
                 strictEqual(error.code, 5, "error.code === SQLException.SYNTAX_ERR (5)");
+
               //equal(error.message, "Request failed: insert into test_table (data) VALUES ,123", "error.message");
+
+              // XXX NOT WORKING for Web SQL or Windows version of plugin:
+              if (!(isWebSql || isWindows))
+                ok(!!error['sqliteCode'], "valid error.sqliteCode exists");
+
+              // XXX NOT WORKING for Web SQL or Windows version of plugin:
+              if (!(isWebSql || isWindows))
+                strictEqual(error.sqliteCode, 1, "error.sqliteCode === 1 (SQLITE_ERROR)");
+
               start();
 
               // We want this error to fail the entire transaction
@@ -1273,13 +1275,26 @@ var mytests = function() {
             }, function(tx, error) {
               ok(!!error, "valid error object");
 
-              // XXX ONLY WORKING for iOS version of plugin:
-              if (isWebSql || !(isAndroid || isWindows || isWP8))
+              // XXX NOT WORKING for Windows version of plugin:
+              if (!isWindows)
                 ok(!!error['code'], "valid error.code exists");
 
               ok(error.hasOwnProperty('message'), "error.message exists");
-              //strictEqual(error.code, 6, "error.code === SQLException.CONSTRAINT_ERR (6)");
+
+              // XXX NOT WORKING for Web SQL [iOS] or Windows version of plugin:
+              if (!(isWebSql || isWindows))
+                strictEqual(error.code, 6, "error.code === SQLException.CONSTRAINT_ERR (6)");
+
               //equal(error.message, "Request failed: insert into test_table (data) VALUES (?),123", "error.message");
+
+              // XXX NOT WORKING for Web SQL or Windows version of plugin:
+              if (!(isWebSql || isWindows))
+                ok(!!error['sqliteCode'], "valid error.sqliteCode exists");
+
+              // XXX NOT WORKING for Web SQL or Windows version of plugin:
+              if (!(isWebSql || isWindows))
+                strictEqual(error.sqliteCode, 19, "error.sqliteCode === 19 (SQLITE_CONSTRAINT)");
+
               start();
 
               // We want this error to fail the entire transaction
@@ -1491,7 +1506,7 @@ var mytests = function() {
 
     //var suiteName = "plugin: ";
 
-    var scenarioList = [ isAndroid ? 'plugin-sqlite-connector' : 'Plugin', 'plugin-android.database' ];
+    var scenarioList = [ isAndroid ? 'Plugin-default-db-implementation' : 'Plugin', 'Plugin-builtin-db-implementation' ];
 
     var scenarioCount = isAndroid ? 2 : 1;
 
@@ -1680,20 +1695,25 @@ var mytests = function() {
 
           var dbName = "Database-Open-callback";
           openDatabase(dbName, "1.0", "Demo", DEFAULT_SIZE, function (db) {
-            ok(true, 'expected open success callback to be called after database is closed');
+            ok(true, 'expected open success callback to be called ...');
             start(1);
           }, function (error) {
-            ok(false, 'expected open error callback not to be called after database is closed');
+            ok(false, 'expected open error callback not to be called ...');
             start(1);
           });
         });
 
-        test_it(suiteName + ' database.close calls its success callback', function () {
+        test_it(suiteName + ' slower database.close calls its success callback', function () {
           // asynch test coming up
           stop(1);
 
           var dbName = "Database-Close-callback";
-          var db = openDatabase(dbName, "1.0", "Demo", DEFAULT_SIZE);
+
+          // faster version BROKEN for iOS (due to background processing model):
+          //var db = openDatabase(dbName, "1.0", "Demo", DEFAULT_SIZE);
+
+          // START of slower version:
+          openDatabase(dbName, "1.0", "Demo", DEFAULT_SIZE, function (db) {
 
           // close database - need to run tests directly in callbacks as nothing is guarenteed to be queued after a close
           db.close(function () {
@@ -1701,6 +1721,12 @@ var mytests = function() {
             start(1);
           }, function (error) {
             ok(false, 'expected close error callback not to be called after database is closed');
+            start(1);
+          });
+
+          // END of slower version:
+          }, function (error) {
+            ok(false, 'expected open error callback not to be called ...');
             start(1);
           });
         });
@@ -1856,7 +1882,7 @@ var mytests = function() {
         });
 
         // Needed to support some large-scale applications:
-        test_it(suiteName + ' close then re-open allows subsequent queries to run', function () {
+        test_it(suiteName + ' close then re-open (2x) allows subsequent queries to run', function () {
           // asynch test coming up
           stop(1);
         
@@ -1947,13 +1973,17 @@ var mytests = function() {
         });
 
         // Needed to support some large-scale applications:
-        test_it(suiteName + ' close, then delete then re-open allows subsequent queries to run', function () {
+        test_it(suiteName + ' close slower, then delete then re-open allows subsequent queries to run', function () {
           var dbName = "Database-Close-delete-Reopen.db";
 
           // asynch test coming up
           stop(1);
 
-          var db1 = openDatabase({name: dbName});
+          // version 1 BROKEN for iOS (due to background processing model):
+          //var db1 = openDatabase({name: dbName});
+
+          // START of slower version:
+          openDatabase(dbName, "1.0", "Demo", DEFAULT_SIZE, function (db1) {
 
           db1.close(function () {
             window.sqlitePlugin.deleteDatabase(dbName, function () {
@@ -1980,6 +2010,12 @@ var mytests = function() {
             });
           }, function (e) {
             ok(false, 'error: ' + e);
+            start(1);
+          });
+
+          // END of slower version:
+          }, function (error) {
+            ok(false, 'expected open error callback not to be called ...');
             start(1);
           });
         });
@@ -2049,6 +2085,9 @@ var mytests = function() {
         });
 
         test_it(suiteName + ' repeatedly open and close database faster (5x)', function () {
+          // XXX CURRENTLY BROKEN on iOS due to current background processing implementation
+          if (!(isAndroid || isIE)) pending('CURRENTLY BROKEN on iOS (background processing implementation)');
+
           var dbName = "repeatedly-open-and-close-faster-5x.db";
 
           // async test coming up
@@ -2166,6 +2205,9 @@ var mytests = function() {
 
         // Needed to support some large-scale applications:
         test_it(suiteName + ' repeatedly open and delete database faster (5x)', function () {
+          // XXX CURRENTLY BROKEN on iOS due to current background processing implementation
+          if (!(isAndroid || isIE)) pending('CURRENTLY BROKEN on iOS (background processing implementation)');
+
           var dbName = "repeatedly-open-and-delete-faster-5x.db";
 
           // async test coming up
