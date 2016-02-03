@@ -1,8 +1,11 @@
 # SQLite plugin in Markdown (litcoffee)
 
-#### Use coffee compiler to compile this directly into Javascript
+    ###
+    License for this version: GPL v3 (http://www.gnu.org/licenses/gpl.txt) or commercial license.
+    Contact for commercial license: info@litehelpers.net
+    ###
 
-#### License for common script: MIT or Apache
+#### Use coffee compiler to compile this directly into Javascript
 
 # Top-level SQLite plugin objects
 
@@ -18,6 +21,12 @@
     DB_STATE_INIT = "INIT"
     DB_STATE_OPEN = "OPEN"
 
+    ###
+    OPTIONAL: Transaction SQL chunking
+    MAX_SQL_CHUNK is adjustable, set to 0 (or -1) to disable chunking
+    ###
+    MAX_SQL_CHUNK = 0
+
 ## global(s):
 
     # per-db map of locking and queueing
@@ -28,6 +37,10 @@
     # [BUG #210] TODO: better to abort and clean up the pending transaction state.
     # XXX TBD this will be renamed and include some more per-db state.
     txLocks = {}
+
+    # Indicate if the platform implementation (Android) requires flat JSON interface
+    useflatjson = false
+    resulturiencoding = false
 
 ## utility functions:
 
@@ -136,6 +149,20 @@
           console.log 'database is closed, new transaction is [stuck] waiting until db is opened again!'
       return
 
+    SQLitePlugin::beginTransaction = (error) ->
+      if !@openDBs[@dbname]
+        throw newSQLError 'database not open'
+
+      myfn = (tx) -> return
+      mytx = new SQLitePluginTransaction(this, myfn, error, null, false, false)
+      mytx.canPause = true
+      mytx.addStatement "BEGIN", [], null, (tx, err) ->
+        throw newSQLError "unable to begin transaction: " + err.message, err.code
+      mytx.txlock = true
+      @addTransaction mytx
+
+      mytx
+
     SQLitePlugin::transaction = (fn, error, success) ->
       # FUTURE TBD check for valid fn here
       if !@openDBs[@dbname]
@@ -210,9 +237,18 @@
       else
         console.log 'OPEN database: ' + @dbname
 
-        opensuccesscb = =>
+        opensuccesscb = (a1) =>
           # NOTE: the db state is NOT stored (in @openDBs) if the db was closed or deleted.
-          # console.log 'OPEN database: ' + @dbname + ' succeeded'
+          console.log 'OPEN database: ' + @dbname + ' OK'
+
+          # Needed to distinguish between Android version (with flat JSON batch sql interface) and
+          # other versions (JSON batch interface unchanged)
+          if !!a1 and (a1 is 'a1' or a1 is 'a1i')
+            console.log 'Detected Android/iOS version with flat JSON interface'
+            useflatjson = true
+            if a1 is 'a1i'
+              console.log 'with result uri encoding'
+              resulturiencoding = true
 
           #if !@openDBs[@dbname] then call open error cb, and abort pending tx if any
           if !@openDBs[@dbname]
@@ -305,6 +341,8 @@
       @success = success
       @txlock = txlock
       @readOnly = readOnly
+      @canPause = false
+      @isPaused = false
       @executes = []
 
       if txlock
@@ -316,13 +354,17 @@
     SQLitePluginTransaction::start = ->
       try
         @fn this
-        @run()
+
+        if @executes.length > 0
+          @run()
+
       catch err
         # If "fn" throws, we must report the whole transaction as failed.
         txLocks[@db.dbname].inProgress = false
         @db.startNextTransaction()
         if @error
           @error newSQLError err
+
       return
 
     SQLitePluginTransaction::executeSql = (sql, values, success, error) ->
@@ -336,6 +378,41 @@
         return
 
       @addStatement(sql, values, success, error)
+
+      if @isPaused
+        @isPaused = false
+        @run()
+
+      return
+
+    SQLitePluginTransaction::end = (success, error) ->
+      if !@canPause
+        throw newSQLError 'Sorry invalid usage'
+
+      @canPause = false
+      @success = success
+      @error = error
+      if @isPaused
+        @isPaused = false
+        if @executes.length == 0
+          @$finish()
+        else
+          @run()
+
+      return
+
+    SQLitePluginTransaction::abort = (errorcb) ->
+      if !@canPause
+        throw newSQLError 'Sorry invalid usage'
+
+      @canPause = false
+      @error = errorcb
+      @addStatement 'INVALID STATEMENT', [], null, null
+
+      if @isPaused
+        @isPaused = false
+        @run()
+
       return
 
     # This method adds the SQL statement to the transaction queue but does not check for
@@ -358,6 +435,9 @@
 
         sql: sql
         params: params
+
+      if MAX_SQL_CHUNK > 0 && @executes.length > MAX_SQL_CHUNK
+        @run()
 
       return
 
@@ -388,13 +468,14 @@
       return
 
     SQLitePluginTransaction::run = ->
+      # persist for handlerFor callbacks:
       txFailure = null
-
-      tropts = []
+      # sql statements from queue:
       batchExecutes = @executes
       waiting = batchExecutes.length
       @executes = []
-      tx = this
+      # my tx object [this]
+      tx = @
 
       handlerFor = (index, didSucceed) ->
         (response) ->
@@ -402,27 +483,130 @@
             if didSucceed
               tx.handleStatementSuccess batchExecutes[index].success, response
             else
-              tx.handleStatementFailure batchExecutes[index].error, newSQLError(response)
+              sqlError = newSQLError(response)
+              if !!response.result
+                sqlError.code = response.result.code
+                sqlError.sqliteCode = response.result.sqliteCode
+              tx.handleStatementFailure batchExecutes[index].error, sqlError
           catch err
             if !txFailure
               txFailure = newSQLError(err)
 
           if --waiting == 0
             if txFailure
-              tx.abort txFailure
+              tx.$abort txFailure
             else if tx.executes.length > 0
               # new requests have been issued by the callback
               # handlers, so run another batch.
               tx.run()
+            else if tx.canPause
+              tx.isPaused = true
             else
-              tx.finish()
+              tx.$finish()
 
           return
 
-      i = 0
+      if useflatjson
+        @run_batch_flatjson batchExecutes, handlerFor
+      else
+        @run_batch batchExecutes, handlerFor
+      return
 
+    # version for Android and iOS (with flat JSON interface)
+    SQLitePluginTransaction::run_batch_flatjson = (batchExecutes, handlerFor) ->
+      flatlist = []
       mycbmap = {}
 
+      i = 0
+      while i < batchExecutes.length
+        request = batchExecutes[i]
+
+        mycbmap[i] =
+          success: handlerFor(i, true)
+          error: handlerFor(i, false)
+
+        flatlist.push request.sql
+        flatlist.push request.params.length
+        for p in request.params
+          flatlist.push p
+
+        i++
+
+      mycb = (result) ->
+        i = 0
+        ri = 0
+        rl = result.length
+
+        while ri < rl
+          r = result[ri++]
+          q = mycbmap[i]
+
+          if r == 'ok'
+            q.success { rows: [] }
+
+          else if r is "ch2"
+            changes = result[ri++]
+            insert_id = result[ri++]
+            q.success
+              rowsAffected: changes
+              insertId: insert_id
+
+          else if r == 'okrows'
+            rows = []
+            changes = 0
+            insert_id = undefined
+
+            if result[ri] == 'changes'
+              ++ri
+              changes = result[ri++]
+
+            if result[ri] == 'insert_id'
+              ++ri
+              insert_id = result[ri++]
+
+            while result[ri] != 'endrows'
+              c = result[ri++]
+              j = 0
+              row = {}
+
+              while j < c
+                k = result[ri++]
+                v = result[ri++]
+                if resulturiencoding and typeof v is 'string'
+                  v = decodeURIComponent v
+                row[k] = v
+                ++j
+
+              rows.push row
+
+            q.success { rows: rows, rowsAffected: changes, insertId: insert_id }
+            ++ri
+
+          else if r == 'error'
+            code = result[ri++]
+            sqliteCode = result[ri++]
+            errormessage = result[ri++]
+            q.error
+              result:
+                code: code
+                sqliteCode: sqliteCode
+                message: errormessage
+
+          ++i
+
+        return
+
+      cordova.exec mycb, null, "SQLitePlugin", "backgroundExecuteSqlBatch",
+        [{dbargs: {dbname: @db.dbname}, flen: batchExecutes.length, flatlist: flatlist}]
+
+      return
+
+    # version for other platforms
+    SQLitePluginTransaction::run_batch = (batchExecutes, handlerFor) ->
+      tropts = []
+      mycbmap = {}
+
+      i = 0
       while i < batchExecutes.length
         request = batchExecutes[i]
 
@@ -438,13 +622,12 @@
         i++
 
       mycb = (result) ->
-        #console.log "mycb result #{JSON.stringify result}"
-
-        last = result.length-1
-        for i in [0..last]
+        i = 0
+        reslength = result.length
+        while i < reslength
           r = result[i]
           type = r.type
-          # NOTE: r.qid can be ignored
+          # NOTE: r.qid ignored (if present)
           res = r.result
 
           q = mycbmap[i]
@@ -453,13 +636,15 @@
             if q[type]
               q[type] res
 
+          ++i
+
         return
 
       cordova.exec mycb, null, "SQLitePlugin", "backgroundExecuteSqlBatch", [{dbargs: {dbname: @db.dbname}, executes: tropts}]
 
       return
 
-    SQLitePluginTransaction::abort = (txFailure) ->
+    SQLitePluginTransaction::$abort = (txFailure) ->
       if @finalized then return
       tx = @
 
@@ -485,7 +670,7 @@
 
       return
 
-    SQLitePluginTransaction::finish = ->
+    SQLitePluginTransaction::$finish = ->
       if @finalized then return
       tx = @
 
