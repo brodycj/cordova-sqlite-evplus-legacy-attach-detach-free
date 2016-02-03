@@ -38,8 +38,6 @@
     # XXX TBD this will be renamed and include some more per-db state.
     txLocks = {}
 
-    # Indicate if the platform implementation (Android) requires flat JSON interface
-    useflatjson = false
     resulturiencoding = false
 
 ## utility functions:
@@ -129,6 +127,8 @@
     # XXX TBD this will be moved and renamed or
     # combined with txLocks.
     SQLitePlugin::openDBs = {}
+
+    SQLitePlugin::a1map = {}
 
     SQLitePlugin::addTransaction = (t) ->
       if !txLocks[@dbname]
@@ -245,7 +245,7 @@
           # other versions (JSON batch interface unchanged)
           if !!a1 and (a1 is 'a1' or a1 is 'a1i')
             console.log 'Detected Android/iOS version with flat JSON interface'
-            useflatjson = true
+            @a1map[@dbname] = true
             if a1 is 'a1i'
               console.log 'with result uri encoding'
               resulturiencoding = true
@@ -272,11 +272,13 @@
           # XXX TODO: newSQLError missing the message part!
           if !!error then error newSQLError 'Could not open database'
           delete @openDBs[@dbname]
+          delete @a1map[@dbname]
           @abortAllPendingTransactions()
           return
 
         # store initial DB state:
         @openDBs[@dbname] = DB_STATE_INIT
+        @a1map[@dbname] = false
 
         cordova.exec opensuccesscb, openerrorcb, "SQLitePlugin", "open", [ @openargs ]
 
@@ -506,7 +508,7 @@
 
           return
 
-      if useflatjson
+      if !!@db.a1map[@db.dbname]
         @run_batch_flatjson batchExecutes, handlerFor
       else
         @run_batch batchExecutes, handlerFor
@@ -769,6 +771,8 @@
 
         # XXX [BUG #210] TODO: when closing or deleting a db, abort any pending transactions (with error callback)
         delete SQLitePlugin::openDBs[args.path]
+        delete SQLitePlugin::a1map[args.path]
+
         cordova.exec success, error, "SQLitePlugin", "delete", [ args ]
 
 ## Exported API:

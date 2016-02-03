@@ -1,11 +1,10 @@
-
 /*
 License for this version: GPL v3 (http://www.gnu.org/licenses/gpl.txt) or commercial license.
 Contact for commercial license: info@litehelpers.net
  */
 
 (function() {
-  var DB_STATE_INIT, DB_STATE_OPEN, MAX_SQL_CHUNK, READ_ONLY_REGEX, SQLiteFactory, SQLitePlugin, SQLitePluginTransaction, argsArray, dblocations, newSQLError, nextTick, resulturiencoding, root, txLocks, useflatjson;
+  var DB_STATE_INIT, DB_STATE_OPEN, MAX_SQL_CHUNK, READ_ONLY_REGEX, SQLiteFactory, SQLitePlugin, SQLitePluginTransaction, argsArray, dblocations, newSQLError, nextTick, resulturiencoding, root, txLocks;
 
   root = this;
 
@@ -24,8 +23,6 @@ Contact for commercial license: info@litehelpers.net
   MAX_SQL_CHUNK = 0;
 
   txLocks = {};
-
-  useflatjson = false;
 
   resulturiencoding = false;
 
@@ -107,6 +104,8 @@ Contact for commercial license: info@litehelpers.net
   };
 
   SQLitePlugin.prototype.openDBs = {};
+
+  SQLitePlugin.prototype.a1map = {};
 
   SQLitePlugin.prototype.addTransaction = function(t) {
     if (!txLocks[this.dbname]) {
@@ -212,7 +211,7 @@ Contact for commercial license: info@litehelpers.net
           console.log('OPEN database: ' + _this.dbname + ' OK');
           if (!!a1 && (a1 === 'a1' || a1 === 'a1i')) {
             console.log('Detected Android/iOS version with flat JSON interface');
-            useflatjson = true;
+            _this.a1map[_this.dbname] = true;
             if (a1 === 'a1i') {
               console.log('with result uri encoding');
               resulturiencoding = true;
@@ -240,10 +239,12 @@ Contact for commercial license: info@litehelpers.net
             error(newSQLError('Could not open database'));
           }
           delete _this.openDBs[_this.dbname];
+          delete _this.a1map[_this.dbname];
           _this.abortAllPendingTransactions();
         };
       })(this);
       this.openDBs[this.dbname] = DB_STATE_INIT;
+      this.a1map[this.dbname] = false;
       cordova.exec(opensuccesscb, openerrorcb, "SQLitePlugin", "open", [this.openargs]);
     }
   };
@@ -479,7 +480,7 @@ Contact for commercial license: info@litehelpers.net
         }
       };
     };
-    if (useflatjson) {
+    if (!!this.db.a1map[this.db.dbname]) {
       this.run_batch_flatjson(batchExecutes, handlerFor);
     } else {
       this.run_batch(batchExecutes, handlerFor);
@@ -759,6 +760,7 @@ Contact for commercial license: info@litehelpers.net
         args.dblocation = dblocation || dblocations[0];
       }
       delete SQLitePlugin.prototype.openDBs[args.path];
+      delete SQLitePlugin.prototype.a1map[args.path];
       return cordova.exec(success, error, "SQLitePlugin", "delete", [args]);
     }
   };
