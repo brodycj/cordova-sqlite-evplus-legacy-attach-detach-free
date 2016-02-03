@@ -12,6 +12,9 @@
 
 #include <regex.h>
 
+// Enabled in this version:
+#define READ_BLOB_AS_BASE64
+
 // NOTE: This is now broken by cordova-ios 4.0, see:
 // https://issues.apache.org/jira/browse/CB-9638
 // Solution is to use NSJSONSerialization instead.
