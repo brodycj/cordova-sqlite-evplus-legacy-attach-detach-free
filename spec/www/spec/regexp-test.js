@@ -7,7 +7,7 @@ var DEFAULT_SIZE = 5000000; // max to avoid popup in safari/ios
 var isAndroid = /Android/.test(navigator.userAgent);
 var isWindows = /Windows /.test(navigator.userAgent); // Windows (8.1)
 
-var scenarioList = [ isAndroid ? 'Plugin-sqlite-connector' : 'Plugin', 'HTML5', 'Plugin-android.database' ];
+var scenarioList = [ isAndroid ? 'Plugin-xx-default' : 'Plugin', 'HTML5', 'Plugin-xx-2' ];
 
 var scenarioCount = isAndroid ? 3 : (isIE ? 1 : 2);
 

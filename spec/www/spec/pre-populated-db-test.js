@@ -14,7 +14,7 @@ var isWP8 = /IEMobile/.test(navigator.userAgent); // Matches WP(7/8/8.1)
 var isWindows = /Windows /.test(navigator.userAgent); // Windows (8.1)
 var isIE = isWindows || isWP8;
 
-var pluginScenarioList = [ isAndroid ? 'Plugin-sqlite-connector' : 'Plugin', 'Plugin-android.database' ];
+var pluginScenarioList = [ isAndroid ? 'Plugin-xx-default' : 'Plugin', 'Plugin-xx-2' ];
 
 var pluginScenarioCount = isAndroid ? 2 : 1;
 

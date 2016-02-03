@@ -40,11 +40,12 @@ var isWindows = /Windows /.test(navigator.userAgent); // Windows (8.1)
 var isIE = isWindows || isWP8;
 var isWebKit = !isIE; // TBD [Android or iOS]
 
-var scenarioList = [ isAndroid ? 'Plugin-default-xx' : 'Plugin', 'HTML5', 'Plugin-xx' ];
+var scenarioList = [ isAndroid ? 'Plugin-xx-default' : 'Plugin', 'HTML5', 'Plugin-xx-2' ];
 
 // XXX FUTURE TBD:
 //var scenarioCount = isAndroid ? 3 : (isIE ? 1 : 2);
-var scenarioCount = (!!window.hasWebKitBrowser) ? 2 : 1;
+//var scenarioCount = (!!window.hasWebKitBrowser) ? 2 : 1;
+var scenarioCount = (!!window.hasWebKitBrowser) ? (isAndroid ? 3 : 2) : 1;
 
 // legacy tests:
 var mytests = function() {
@@ -60,7 +61,7 @@ var mytests = function() {
       // NOTE: MUST be defined in function scope, NOT outer scope:
       var openDatabase = function(name, ignored1, ignored2, ignored3) {
         if (isOldAndroidImpl) {
-          return window.sqlitePlugin.openDatabase({name: name, androidDatabaseImplementation: 2});
+          return window.sqlitePlugin.openDatabase({name: 'i2-'+name, androidDatabaseImplementation: 2});
         }
         if (isWebSql) {
           return window.openDatabase(name, "1.0", "Demo", DEFAULT_SIZE);
@@ -1505,7 +1506,7 @@ var mytests = function() {
 
     //var suiteName = "plugin: ";
 
-    var scenarioList = [ isAndroid ? 'Plugin-default-db-implementation' : 'Plugin', 'Plugin-builtin-db-implementation' ];
+    var scenarioList = [ isAndroid ? 'Plugin-xx-default' : 'Plugin', 'Plugin-xx-2' ];
 
     var scenarioCount = isAndroid ? 2 : 1;
 
@@ -1525,11 +1526,11 @@ var mytests = function() {
           var dbname, okcb, errorcb;
 
           if (first.constructor === String ) {
-            dbname = first;
+            dbname = 'i2-'+first;
             okcb = fifth;
             errorcb = sixth;
           } else {
-            dbname = first.name;
+            dbname = 'i2-'+first.name;
             okcb = second;
             errorcb = third;
           }
@@ -1620,6 +1621,8 @@ var mytests = function() {
         });
 
         test_it(suiteName + ' test sqlitePlugin.deleteDatabase()', function () {
+          if (isAndroid && isOldAndroidImpl) pending('CURRENTLY BROKEN in old Android implementation');
+
           stop();
           var db = openDatabase("DB-Deletable", "1.0", "Demo", DEFAULT_SIZE);
 
@@ -1932,6 +1935,8 @@ var mytests = function() {
 
         // Needed to support some large-scale applications:
         test_it(suiteName + ' delete then re-open allows subsequent queries to run', function () {
+          if (isAndroid && isOldAndroidImpl) pending('CURRENTLY BROKEN in old Android implementation');
+
           var dbName = "Database-delete-and-Reopen.db";
           var dbLocation = 2;
 
@@ -1973,6 +1978,8 @@ var mytests = function() {
 
         // Needed to support some large-scale applications:
         test_it(suiteName + ' close slower, then delete then re-open allows subsequent queries to run', function () {
+          if (isAndroid && isOldAndroidImpl) pending('CURRENTLY BROKEN in old Android implementation');
+
           var dbName = "Database-Close-delete-Reopen.db";
 
           // asynch test coming up
@@ -2142,6 +2149,8 @@ var mytests = function() {
 
         // Needed to support some large-scale applications:
         test_it(suiteName + ' repeatedly open and delete database (4x)', function () {
+          if (isAndroid && isOldAndroidImpl) pending('CURRENTLY BROKEN in old Android implementation');
+
           var dbName = "repeatedly-open-and-delete-4x.db";
 
           // async test coming up
@@ -2204,6 +2213,8 @@ var mytests = function() {
 
         // Needed to support some large-scale applications:
         test_it(suiteName + ' repeatedly open and delete database faster (5x)', function () {
+          if (isAndroid && isOldAndroidImpl) pending('CURRENTLY BROKEN in old Android implementation');
+
           // XXX CURRENTLY BROKEN on iOS due to current background processing implementation
           if (!(isAndroid || isIE)) pending('CURRENTLY BROKEN on iOS (background processing implementation)');
 

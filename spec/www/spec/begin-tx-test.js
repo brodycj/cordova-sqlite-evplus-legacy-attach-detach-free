@@ -4,33 +4,30 @@ var MYTIMEOUT = 12000;
 
 var DEFAULT_SIZE = 5000000; // max to avoid popup in safari/ios
 
-var scenarioList = [ 'Plugin' ];
-var scenarioCount = 1;
+var pluginScenarioList = [ isAndroid ? 'Plugin-xx-default' : 'Plugin', 'Plugin-xx-2' ];
+
+var pluginScenarioCount = isAndroid ? 2 : 1;
 
 var mytests = function() {
 
   for (var i=0; i<scenarioCount; ++i) {
 
-    describe(scenarioList[i] + ': multi-part tx test(s)', function() {
-      var scenarioName = scenarioList[i];
+    describe(pluginScenarioCount[i] + ': multi-part tx test(s)', function() {
+      var scenarioName = pluginScenarioCount[i];
       var suiteName = scenarioName + ': ';
-      var isWebSql = (i === 1);
-      var isOldImpl = (i === 2);
+      var isOldDatabaseImpl = (i === 1);
 
       // NOTE: MUST be defined in function scope, NOT outer scope:
       var openDatabase = function(name, ignored1, ignored2, ignored3) {
-        if (isOldImpl) {
-          return window.sqlitePlugin.openDatabase({name: name, androidDatabaseImplementation: 2});
-        }
-        if (isWebSql) {
-          return window.openDatabase(name, "1.0", "Demo", DEFAULT_SIZE);
+        if (isOldDatabaseImpl) {
+          return window.sqlitePlugin.openDatabase({name: 'i2-'+name, androidDatabaseImplementation: 2});
         } else {
           return window.sqlitePlugin.openDatabase(name, "1.0", "Demo", DEFAULT_SIZE);
         }
       }
 
-      if (!isWebSql)
-        it(suiteName + "multi-part transaction", function(done) {
+      it(suiteName + "multi-part transaction",
+        function(done) {
           var db = openDatabase("multi-part-test.db", "1.0", "Demo", DEFAULT_SIZE);
 
           expect(db).toBeDefined()

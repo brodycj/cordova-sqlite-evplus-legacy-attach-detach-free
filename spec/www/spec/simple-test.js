@@ -14,10 +14,11 @@ var isWindows = /Windows /.test(navigator.userAgent); // Windows (8.1)
 var isIE = isWindows || isWP8;
 var isWebKit = !isIE; // TBD [Android or iOS]
 
-var scenarioList = [ isAndroid ? 'Plugin-sqlite-connector' : 'Plugin', 'HTML5', 'Plugin-android.database' ];
+var scenarioList = [ isAndroid ? 'Plugin-xx-default' : 'Plugin', 'HTML5', 'Plugin-xx-2' ];
 
 //var scenarioCount = isAndroid ? 3 : (isIE ? 1 : 2);
-var scenarioCount = (!!window.hasWebKitBrowser) ? 2 : 1;
+//var scenarioCount = (!!window.hasWebKitBrowser) ? 2 : 1;
+var scenarioCount = (!!window.hasWebKitBrowser) ? (isAndroid ? 3 : 2) : 1;
 
 // simple tests:
 var mytests = function() {
@@ -33,7 +34,7 @@ var mytests = function() {
       // NOTE: MUST be defined in function scope, NOT outer scope:
       var openDatabase = function(name, ignored1, ignored2, ignored3) {
         if (isOldImpl) {
-          return window.sqlitePlugin.openDatabase({name: name, androidDatabaseImplementation: 2});
+          return window.sqlitePlugin.openDatabase({name: 'i2-'+name, androidDatabaseImplementation: 2});
         }
         if (isWebSql) {
           return window.openDatabase(name, '1.0', 'Test', DEFAULT_SIZE);
@@ -547,7 +548,7 @@ var mytests = function() {
       }
 
     });
-  };
+  }
 }
 
 if (window.hasBrowser) mytests();
