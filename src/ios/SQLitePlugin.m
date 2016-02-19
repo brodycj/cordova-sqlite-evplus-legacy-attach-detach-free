@@ -12,8 +12,8 @@
 
 #include <regex.h>
 
-// XXX TODO (needs testing):
-//#define READ_BLOB_AS_BASE64
+// Enabled in this version:
+#define READ_BLOB_AS_BASE64
 
 // FUTURE TBD (needs testing):
 //#define INCLUDE_SQL_BLOB_BINDING

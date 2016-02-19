@@ -54,6 +54,7 @@ I raised [Cordova bug CB-9830](https://issues.apache.org/jira/browse/CB-9830) to
 
 ## Announcements
 
+- Support for _reading_ BLOB values (from pre-populated databases) for Android and iOS
 - ATTACH/DETACH is now supported as described below.
 - Pre-populated database support for Android, iOS, ~~and Windows "Universal" (_broken_)~~, usage described below
 - REGEXP is now supported for Android and iOS platforms.
@@ -110,7 +111,7 @@ TBD *your app here*
 - In-memory database `db=window.sqlitePlugin.openDatabase({name: ":memory:"})` is currently not supported.
 - The Android version cannot work with more than 100 open db files (due to the threading model used).
 - Fixed with a workaround in this version: ~~UNICODE line separator (`\u2028`) and paragraph separator (`\u2029`) are currently not supported and known to be broken in iOS version due to [Cordova bug CB-9435](https://issues.apache.org/jira/browse/CB-9435).~~
-- Blob type is currently not supported and known to be broken on multiple platforms.
+- Blob type is currently not supported _for Windows_ ~~and known to be broken on multiple platforms~~.
 - UNICODE `\u0000` (same as `\0`) character not working in Android (default implementation)
 - Case-insensitive matching and other string manipulations on Unicode characters, which is provided by optional ICU integration in the sqlite source and working with recent versions of Android, is not supported for any target platforms.
 - iOS version uses a thread pool but with only one thread working at a time due to "synchronized" database access

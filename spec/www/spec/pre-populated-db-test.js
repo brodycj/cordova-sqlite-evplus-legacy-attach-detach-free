@@ -55,8 +55,7 @@ var mytests = function() {
               check1 = true;
 
               // try some changes:
-              tx.executeSql('DROP TABLE tt');
-              tx.executeSql('CREATE TABLE tt (testcol)');
+              tx.executeSql('DELETE FROM tt');
               tx.executeSql('INSERT INTO tt VALUES (?)', ['new-value']);
             });
           }, function(e) {
@@ -95,6 +94,83 @@ var mytests = function() {
             });
           });
         }, MYTIMEOUT);
+
+      it(suiteName + 'preliminary blob test cleanup',
+        function(done) {
+          expect(true).toBe(true);
+          window.sqlitePlugin.deleteDatabase('blob-pre.db', done, done);
+        }, MYTIMEOUT);
+
+      it(suiteName + 'Pre-populated blob database test', function(done) {
+          if (isAndroid && !isOldDatabaseImpl) pending('BROKEN for default Android-sqlite-connector version'); // XXX
+
+          var dbc1 = window.sqlitePlugin.openDatabase({
+            name: 'blob-pre.db',
+            createFromLocation: 1,
+            androidDatabaseImplementation: isOldDatabaseImpl ? 2 : 0
+          });
+
+          expect(dbc1).toBeDefined()
+
+          var check1 = false;
+
+          dbc1.transaction(function(tx) {
+
+            expect(tx).toBeDefined();
+
+            tx.executeSql('SELECT * from tt', [], function(tx, res) {
+              // XXX TBD: Why does android.database.sqlite add the extra '\n' character???
+              //expect(res.rows.item(0).blobcol).toEqual('AQID');
+
+              if (isAndroid)
+                expect(res.rows.item(0).blobcol).toEqual('AQID\n');
+              else
+                expect(res.rows.item(0).blobcol).toEqual('AQID');
+
+              check1 = true;
+
+              // try some changes:
+              tx.executeSql('DELETE FROM tt');
+              tx.executeSql('INSERT INTO tt VALUES (?)', ['string-value']);
+            });
+          }, function(e) {
+            expect(false).toBe(true);
+            dbc1.close();
+            done();
+          }, function() {
+            expect(check1).toBe(true);
+            dbc1.close(function() {
+              // try opening it again:
+              var dbc2 = window.sqlitePlugin.openDatabase({
+                name: 'blob-pre.db',
+                createFromLocation: 1,
+                androidDatabaseImplementation: isOldDatabaseImpl ? 2 : 0
+              });
+
+              var check2 = false;
+
+              dbc2.transaction(function(tx) {
+                expect(tx).toBeDefined()
+
+                // verify that the changes were not overwritten:
+                tx.executeSql('SELECT * from tt', [], function(tx, res) {
+                  expect(res.rows.item(0).blobcol).toEqual('string-value');
+                  check2 = true;
+                });
+              }, function(e) {
+                expect(false).toBe(true);
+                dbc2.close();
+                done();
+              }, function() {
+                expect(check2).toBe(true);
+                dbc2.close();
+                done();
+              });
+            });
+          });
+        }, MYTIMEOUT);
+
+
     });
   };
 }
