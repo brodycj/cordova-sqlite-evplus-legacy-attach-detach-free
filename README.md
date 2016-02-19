@@ -31,12 +31,13 @@ As documented in the "**A User’s iCloud Storage Is Limited**" section of [iClo
 
 ### How to disable iCloud backup
 
-Use the `location` option in `sqlitePlugin.openDatabase()` to store the database in a subdirectory that is *NOT* backed up to iCloud, as described in the section below.
+**Already fixed in this version:** Use the `location` option in `sqlitePlugin.openDatabase()` to store the database in a subdirectory that is *NOT* backed up to iCloud, as described in the section below.
 
 **NOTE:** Changing `BackupWebStorage` in `config.xml` has no effect on a database created by this plugin. `BackupWebStorage` applies only to local storage and/or Web SQL storage created in the WebView (*not* using this plugin). Ref: [phonegap/build#338 (comment)](https://github.com/phonegap/build/issues/338#issuecomment-113328140)
 
 ## Status
 
+- Default location for iOS is `Library/LocalDatabase`, will *not* be backed up to iCloud (may be changed by adjusting the `location` option as described below)
 - Free support is available in TBD
 - Patches patches will *NOT* be accepted on this project due to potential licensing issues.
 - omitted from this version branch: Windows
@@ -222,9 +223,9 @@ There are two options to open a database access object:
 - **Classical:** `var db = window.sqlitePlugin.openDatabase("myDatabase.db", "1.0", "Demo", -1);`
 
 The `location` option is used to select the database subdirectory location (iOS *only*) with the following choices:
-- `0` (default): `Documents` - visible to iTunes and backed up by iCloud
+- `0`: `Documents` - visible to iTunes and backed up by iCloud
 - `1`: `Library` - backed up by iCloud, *NOT* visible to iTunes
-- `2`: `Library/LocalDatabase` - *NOT* visible to iTunes and *NOT* backed up by iCloud
+- `2` *(default)*: `Library/LocalDatabase` - *NOT* visible to iTunes and *NOT* backed up by iCloud
 
 **IMPORTANT:** Please wait for the 'deviceready' event, as in the following example:
 
@@ -585,7 +586,7 @@ db.attach('alias_name', 'dbfilename', optionalSuccessCallback, optionalErrorCall
 
 **NOTE:** For Android the database *must* be opened with the `androidDatabaseImplementation: 2` option (TODO).
 
-For iOS it is currently not possible to attach to a database installed in another location using `location: 1` or `location: 2` (TODO).
+~~For iOS it is currently not possible to attach to a database installed in another location using `location: 1` or `location: 2` (TODO).~~
 
 ### Detach
 

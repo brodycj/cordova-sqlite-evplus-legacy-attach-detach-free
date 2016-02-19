@@ -313,13 +313,12 @@ sqlite_regexp(sqlite3_context * context, int argc, sqlite3_value ** values) {
 
     NSString *dbFileName1 = [options objectForKey:@"dbname1"];
 
-    // FUTURE TODO TODO:
-    //NSString *dblocation = [options objectForKey:@"dblocation"];
-    //if (dblocation == NULL) dblocation = @"docs";
-
     NSString *dbFileName2 = [options objectForKey:@"dbname2"];
 
     NSString *alias = [options objectForKey:@"alias"];
+
+    NSString *dblocation = [options objectForKey:@"dblocation"];
+    if (dblocation == NULL) dblocation = @"docs";
 
     if (dbFileName1 == NULL) {
         // Should not happen:
@@ -333,10 +332,7 @@ sqlite_regexp(sqlite3_context * context, int argc, sqlite3_value ** values) {
         NSValue *val = [openDBs objectForKey:dbFileName1];
         sqlite3 *db = [val pointerValue];
 
-    NSString *dblocation = [options objectForKey:@"dblocation"];
-    if (dblocation == NULL) dblocation = @"docs";
-
-    NSString *dbname = [self getDBPath:dbFileName2 at:dblocation];
+        NSString *dbname = [self getDBPath:dbFileName2 at:dblocation];
 
         if (db == NULL) {
             // Should not happen:
@@ -345,9 +341,8 @@ sqlite_regexp(sqlite3_context * context, int argc, sqlite3_value ** values) {
             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Specified db was not open"];
         }
         else {
-            // XXX FUTURE TBD should bind db file name as parameter instead:
+            // XXX FUTURE TBD bind db file name as parameter instead?
 
-            //NSString * attachCommand = [NSString stringWithFormat:@"ATTACH ? AS %@", alias];
             NSString * attachCommand = [NSString stringWithFormat:@"ATTACH \"%@\" AS %@", dbname, alias];
 
             if(sqlite3_exec(db, [attachCommand UTF8String], NULL, NULL, NULL) == SQLITE_OK) {

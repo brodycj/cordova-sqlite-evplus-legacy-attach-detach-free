@@ -130,11 +130,24 @@
 
     SQLitePlugin::a1map = {}
 
-    SQLitePlugin::attach = (alias, dbname, successcb, errorcb) ->
+    SQLitePlugin::attach = (alias, second, successcb, errorcb) ->
+      dbname = null
+      location = 2
+
+      if second.constructor == String
+        dbname = second
+
+      else
+        dbname = second.name
+        location = second.location
+
+      dblocation = dblocations[location]
+
       args =
         dbname1: @dbname
         dbname2: dbname
         alias: alias
+        dblocation: dblocation
         
       cordova.exec successcb, errorcb, "SQLitePlugin", "attach", [args]
 
@@ -786,7 +799,7 @@
             if args.length > 2 then errorcb = args[2]
 
         dblocation = if !!openargs.location then dblocations[openargs.location] else null
-        openargs.dblocation = dblocation || dblocations[0]
+        openargs.dblocation = dblocation || dblocations[2]
 
         if !!openargs.createFromLocation and openargs.createFromLocation == 1
           openargs.createFromResource = "1"
@@ -805,14 +818,14 @@
         if first.constructor == String
           #console.log "delete db name: #{first}"
           args.path = first
-          args.dblocation = dblocations[0]
+          args.dblocation = dblocations[2]
 
         else
           #console.log "delete db args: #{JSON.stringify first}"
           if !(first and first['name']) then throw new Error "Please specify db name"
           args.path = first.name
           dblocation = if !!first.location then dblocations[first.location] else null
-          args.dblocation = dblocation || dblocations[0]
+          args.dblocation = dblocation || dblocations[2]
 
         # XXX [BUG #210] TODO: when closing or deleting a db, abort any pending transactions (with error callback)
         delete SQLitePlugin::openDBs[args.path]

@@ -108,12 +108,22 @@ Contact for commercial license: info@litehelpers.net
 
   SQLitePlugin.prototype.a1map = {};
 
-  SQLitePlugin.prototype.attach = function(alias, dbname, successcb, errorcb) {
-    var args;
+  SQLitePlugin.prototype.attach = function(alias, second, successcb, errorcb) {
+    var args, dblocation, dbname, location;
+    dbname = null;
+    location = 2;
+    if (second.constructor === String) {
+      dbname = second;
+    } else {
+      dbname = second.name;
+      location = second.location;
+    }
+    dblocation = dblocations[location];
     args = {
       dbname1: this.dbname,
       dbname2: dbname,
-      alias: alias
+      alias: alias,
+      dblocation: dblocation
     };
     return cordova.exec(successcb, errorcb, "SQLitePlugin", "attach", [args]);
   };
@@ -787,7 +797,7 @@ Contact for commercial license: info@litehelpers.net
         }
       }
       dblocation = !!openargs.location ? dblocations[openargs.location] : null;
-      openargs.dblocation = dblocation || dblocations[0];
+      openargs.dblocation = dblocation || dblocations[2];
       if (!!openargs.createFromLocation && openargs.createFromLocation === 1) {
         openargs.createFromResource = "1";
       }
@@ -804,14 +814,14 @@ Contact for commercial license: info@litehelpers.net
       args = {};
       if (first.constructor === String) {
         args.path = first;
-        args.dblocation = dblocations[0];
+        args.dblocation = dblocations[2];
       } else {
         if (!(first && first['name'])) {
           throw new Error("Please specify db name");
         }
         args.path = first.name;
         dblocation = !!first.location ? dblocations[first.location] : null;
-        args.dblocation = dblocation || dblocations[0];
+        args.dblocation = dblocation || dblocations[2];
       }
       delete SQLitePlugin.prototype.openDBs[args.path];
       delete SQLitePlugin.prototype.a1map[args.path];
