@@ -60,15 +60,24 @@ var mytests = function() {
                 name: 'attach-test.db',
                 androidDatabaseImplementation: 2,
               }, function(db2) {
-                db2.attach('ext', 'attach-test-external.db', function() {
-                  db2.executeSql('SELECT * from ext.tt', [], function(res) {
+                db2.attach('ext_attached', 'attach-test-external.db', function() {
+                  db2.executeSql('SELECT * from ext_attached.tt', [], function(res) {
                     expect(res).toBeDefined();
                     expect(res.rows).toBeDefined();
                     expect(res.rows.length).toBe(1);
                     expect(res.rows.item(0).tv).toBeDefined();
                     expect(res.rows.item(0).tv).toBe('test');
 
-                    done();
+                    db2.executeSql('PRAGMA database_list', [], function(res) {
+                      expect(res.rows.length).toBe(2);
+                      expect(res.rows.item(0).name).toBe('main');
+                      expect(res.rows.item(1).name).toBe('ext_attached');
+                      done();
+                    }, function(err) {
+                      expect(false).toBe(true);
+                      expect(JSON.stringify(err)).toBe('');
+                      done();
+                    });
                   }, function(err) {
                     expect(false).toBe(true);
                     expect(JSON.stringify(err)).toBe('');
