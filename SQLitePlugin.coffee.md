@@ -335,6 +335,33 @@
       @addTransaction new SQLitePluginTransaction(this, myfn, null, null, false, false)
       return
 
+    SQLitePlugin::sqlBatch = (sqlStatements, success, error) ->
+      if !sqlStatements || sqlStatements.constructor isnt Array
+        throw newSQLError 'sqlBatch expects an array'
+
+      batchList = []
+
+      for st in sqlStatements
+        if st.constructor is Array
+          if st.length == 0
+            throw newSQLError 'sqlBatch array element of zero (0) length'
+
+          batchList.push
+            sql: st[0]
+            params: if st.length == 0 then [] else st[1]
+
+        else
+          batchList.push
+            sql: st
+            params: []
+
+      myfn = (tx) ->
+        for elem in batchList
+          tx.addStatement(elem.sql, elem.params, null, null)
+
+      @addTransaction new SQLitePluginTransaction(this, myfn, error, success, true, false)
+      return
+
 ## SQLite plugin transaction object for batching:
 
     SQLitePluginTransaction = (db, fn, error, success, txlock, readOnly) ->
@@ -361,6 +388,11 @@
       if txlock
         @addStatement "BEGIN", [], null, (tx, err) ->
           throw newSQLError "unable to begin transaction: " + err.message, err.code
+
+      # Workaround for litehelpers/Cordova-sqlite-storage#409
+      # extra statement in case user function does not add any SQL statements
+      else
+        @addStatement "SELECT 1", [], null, null
 
       return
 
@@ -485,6 +517,8 @@
       txFailure = null
       # sql statements from queue:
       batchExecutes = @executes
+      # NOTE: If this is zero it will not work. Workaround is applied in the constructor.
+      # FUTURE TBD: It would be better to fix the problem here.
       waiting = batchExecutes.length
       @executes = []
       # my tx object [this]
@@ -791,6 +825,18 @@
     root.sqlitePlugin =
       sqliteFeatures:
         isSQLitePlugin: true
+
+      echoTest: (okcb, errorcb) ->
+        ok = (s) ->
+          if s is 'test-string'
+            okcb()
+          else
+            errorcb "Mismatch: got: '#{s}' expected 'test-string'"
+
+        error = (e) ->
+          errorcb e
+
+        cordova.exec okcb, errorcb, "SQLitePlugin", "echoStringValue", [{value:'test-string'}]
 
       openDatabase: SQLiteFactory.opendb
       deleteDatabase: SQLiteFactory.deleteDb

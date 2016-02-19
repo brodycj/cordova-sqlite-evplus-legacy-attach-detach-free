@@ -2,7 +2,7 @@
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
     id="cordova-sqlite-evfree-attach-eval"
-    version="0.8.0-evfree-attach-eval">
+    version="0.8.xx-evfree-attach-eval">
 
     <name>Cordova sqlite storage plugin with ATTACH (evaluation)</name>
 
@@ -11,7 +11,7 @@
     <keywords>sqlite</keywords>
 
     <description>Native interface to SQLite for PhoneGap/Cordova. Allows you to use more storage and provides more flexibility than the standard Web SQL database (window.openDatabase).</description>
-    <author>litehelpers (various)</author>
+    <author>Litehelpers/Various</author>
 
     <engines>
         <engine name="cordova" version=">=3.3.0" />
@@ -26,12 +26,12 @@
         <!-- Cordova >= 3.0.0 -->
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="SQLitePlugin">
-                <param name="android-package" value="io.liteglue.SQLitePlugin"/>
+                <param name="android-package" value="io.sqlc.SQLitePlugin"/>
             </feature>
         </config-file>
 
-        <source-file src="src/android/io/liteglue/SQLitePlugin.java" target-dir="src/io/liteglue"/>
-        <source-file src="src/android/io/liteglue/SQLiteAndroidDatabase.java" target-dir="src/io/liteglue"/>
+        <source-file src="src/android/io/sqlc/SQLitePlugin.java" target-dir="src/io/sqlc"/>
+        <source-file src="src/android/io/sqlc/SQLiteAndroidDatabase.java" target-dir="src/io/sqlc"/>
 
         <!-- Android-sqlite-connector: -->
         <source-file src="src/android/libs/sqlite-connector.jar" target-dir="libs"/>

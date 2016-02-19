@@ -4,7 +4,7 @@
  * Copyright (c) 2010, IBM Corporation
  */
 
-package io.liteglue;
+package io.sqlc;
 
 import android.annotation.SuppressLint;
 
@@ -29,7 +29,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
 
+import io.liteglue.*;
+
 public class SQLitePlugin extends CordovaPlugin {
+
+    static SQLiteConnector connector = new SQLiteConnector();
 
     /**
      * Multiple database runner map (static).
@@ -37,11 +41,6 @@ public class SQLitePlugin extends CordovaPlugin {
      * FUTURE put DBRunner into a public class that can provide external accessor.
      */
     static ConcurrentHashMap<String, DBRunner> dbrmap = new ConcurrentHashMap<String, DBRunner>();
-
-    /**
-     * SQLiteGlueConnector (instance of SQLiteConnector) for NDK version:
-     */
-    static SQLiteConnector connector = new SQLiteConnector();
 
     /**
      * NOTE: Using default constructor, no explicit constructor.
@@ -81,11 +80,18 @@ public class SQLitePlugin extends CordovaPlugin {
 
         boolean status = true;
         JSONObject o;
+        String echo_value;
         String dbname;
         String dbname2;
         String alias;
 
         switch (action) {
+            case echoStringValue:
+                o = args.getJSONObject(0);
+                echo_value = o.getString("value");
+                cbc.success(echo_value);
+                break;
+
             case open:
                 o = args.getJSONObject(0);
                 dbname = o.getString("name");
@@ -377,8 +383,6 @@ public class SQLitePlugin extends CordovaPlugin {
     }
 
     private void attachDatabase(String dbname1, String dbname2, String alias, CallbackContext cbc) {
-                //cbc.error("sorry not implemented");
-//* ** {{
         DBRunner r = dbrmap.get(dbname1);
         if (r != null) {
             try {
@@ -394,7 +398,6 @@ public class SQLitePlugin extends CordovaPlugin {
                 cbc.error("sorry db not open");
             }
         }
-// ** }} */
     }
 
     /**
@@ -884,7 +887,7 @@ public class SQLitePlugin extends CordovaPlugin {
             this.dbname = dbname;
             this.createFromResource = options.has("createFromResource");
             this.oldImpl = options.has("androidOldDatabaseImplementation");
-            Log.v(SQLitePlugin.class.getSimpleName(), "Android db implementation: " + (oldImpl ? "OLD" : "sqlite4java (NDK)"));
+            Log.v(SQLitePlugin.class.getSimpleName(), "Android db implementation: built-in android.database.sqlite package");
             this.bugWorkaround = this.oldImpl && options.has("androidBugWorkaround");
             if (this.bugWorkaround)
                 Log.v(SQLitePlugin.class.getSimpleName(), "Android db closing/locking workaround applied");
@@ -925,7 +928,6 @@ public class SQLitePlugin extends CordovaPlugin {
                         mydb.executeSqlBatch(dbq.queries, dbq.jsonparams, null, dbq.cbc);
                     }
 
-                    // NOTE: androidLock[Bug]Workaround is not necessary and IGNORED for sqlite4java (NDK version).
                     if (this.bugWorkaround && dbq.queries.length == 1 && dbq.queries[0] == "COMMIT")
                       if (oldImpl)
                         mydb.bugWorkaround();
@@ -1058,6 +1060,7 @@ public class SQLitePlugin extends CordovaPlugin {
     }
 
     private static enum Action {
+        echoStringValue,
         open,
         attach,
         detach,

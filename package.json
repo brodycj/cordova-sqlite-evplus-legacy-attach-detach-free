@@ -1,27 +1,23 @@
 {
   "name": "cordova-sqlite-evfree-attach-eval",
-  "version": "0.8.0-evfree-eval-xxx",
+  "version": "0.8.xx-evfree-eval-xxx",
   "description": "Native interface to SQLite for PhoneGap/Cordova with ATTACH (evaluation)",
   "cordova": {
     "id": "cordova-sqlite-evfree-attach-eval",
     "platforms": [
       "android",
-      "ios",
-      "windows",
-      "amazon-fireos"
+      "ios"
     ]
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/litehelpers/cordova-sqlite-ext.git"
+    "url": "https://github.com/brodybits/cordova-sqlite-evfree-attach-eval.git"
   },
   "keywords": [
     "sqlite",
     "ecosystem:cordova",
     "cordova-android",
-    "cordova-ios",
-    "cordova-windows",
-    "cordova-amazon-fireos"
+    "cordova-ios"
   ],
   "engines": [
     {
@@ -30,9 +26,9 @@
     }
   ],
   "author": "various",
-  "license": "MIT",
+  "license": "GPL",
   "bugs": {
-    "url": "https://github.com/litehelpers/cordova-sqlite-extras/issues"
+    "url": "https://github.com/brodybits/cordova-sqlite-evfree-attach-eval/issues"
   },
-  "homepage": "https://github.com/litehelpers/cordova-sqlite-extras"
+  "homepage": "https://github.com/brodybits/cordova-sqlite-evfree-attach-eval"
 }
