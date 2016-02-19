@@ -139,11 +139,7 @@
       cordova.exec successcb, errorcb, "SQLitePlugin", "attach", [args]
 
     SQLitePlugin::detach = (alias, successcb, errorcb) ->
-      args =
-        dbname1: @dbname
-        alias: alias
-        
-      cordova.exec successcb, errorcb, "SQLitePlugin", "detach", [args]
+      @executeSql 'DETACH ' + alias, [], (-> successcb()), errorcb
 
     SQLitePlugin::addTransaction = (t) ->
       if !txLocks[@dbname]

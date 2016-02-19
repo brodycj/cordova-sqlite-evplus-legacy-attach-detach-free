@@ -54,7 +54,7 @@ I raised [Cordova bug CB-9830](https://issues.apache.org/jira/browse/CB-9830) to
 
 ## Announcements
 
-- ATTACH is now supported as described below.
+- ATTACH/DETACH is now supported as described below.
 - Pre-populated database support for Android, iOS, ~~and Windows "Universal" (_broken_)~~, usage described below
 - REGEXP is now supported for Android and iOS platforms.
 - This version has the following improvement(s):
@@ -115,7 +115,7 @@ TBD *your app here*
 - Case-insensitive matching and other string manipulations on Unicode characters, which is provided by optional ICU integration in the sqlite source and working with recent versions of Android, is not supported for any target platforms.
 - iOS version uses a thread pool but with only one thread working at a time due to "synchronized" database access
 - Large query result can be slow, also due to JSON implementation
-- ATTACH another database file is not supported (due to path specifications, which work differently depending on the target platform)
+- ATTACH another database file is not supported _for Windows (FUTURE TBD)_ ~~(due to path specifications, which work differently depending on the target platform)~~
 - User-defined savepoints are not supported and not expected to be compatible with the transaction locking mechanism used by this plugin. In addition, the use of BEGIN/COMMIT/ROLLBACK statements is not supported.
 - Problems have been reported when using this plugin with Crosswalk (for Android). A couple of things you can try:
   - Install Crosswalk as a plugin instead of using Crosswalk to create the project.
@@ -511,10 +511,26 @@ To attach to another database in the default location:
 db.attach('alias_name', 'dbfilename', optionalSuccessCallback, optionalErrorCallback);
 ```
 
-TBD missing issue(s):
+**NOTE:** For Android the database *must* be opened with the `androidDatabaseImplementation: 2` option (TODO).
 
-- It is currently not possible to attach to a database installed in another location using `location: 1` or `location: 2`.
-- DETACH is missing
+For iOS it is currently not possible to attach to a database installed in another location using `location: 1` or `location: 2` (TODO).
+
+### Detach
+
+```Javascript
+db.detach('alias_name', optionalSuccessCallback, optionalErrorCallback);
+```
+
+### To list attached databases
+
+```Javascript
+db.executeSql('PRAGMA database_list', [], function(res) {
+  console.log('alias: ' + res.rows.item(1).name);
+  console.log('file: ' + res.rows.item(1).file);
+});
+```
+
+For more information: http://www.sqlite.org/pragma.html#pragma_database_list
 
 ## Close a database object
 

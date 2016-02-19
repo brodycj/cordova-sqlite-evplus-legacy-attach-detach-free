@@ -1,3 +1,4 @@
+
 /*
 License for this version: GPL v3 (http://www.gnu.org/licenses/gpl.txt) or commercial license.
 Contact for commercial license: info@litehelpers.net
@@ -118,12 +119,9 @@ Contact for commercial license: info@litehelpers.net
   };
 
   SQLitePlugin.prototype.detach = function(alias, successcb, errorcb) {
-    var args;
-    args = {
-      dbname1: this.dbname,
-      alias: alias
-    };
-    return cordova.exec(successcb, errorcb, "SQLitePlugin", "detach", [args]);
+    return this.executeSql('DETACH ' + alias, [], (function() {
+      return successcb();
+    }), errorcb);
   };
 
   SQLitePlugin.prototype.addTransaction = function(t) {
