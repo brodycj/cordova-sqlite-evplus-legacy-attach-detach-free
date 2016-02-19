@@ -1,6 +1,6 @@
 {
   "name": "cordova-sqlite-evfree-attach-eval",
-  "version": "0.8.xx-evfree-eval-xxx",
+  "version": "0.8.1-evfree-attach-eval",
   "description": "Native interface to SQLite for PhoneGap/Cordova with ATTACH (evaluation)",
   "cordova": {
     "id": "cordova-sqlite-evfree-attach-eval",

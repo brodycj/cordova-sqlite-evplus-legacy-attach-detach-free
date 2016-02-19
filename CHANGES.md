@@ -1,8 +1,9 @@
 # Changes
 
-## cordova-sqite-evfree-attach-xxx 0.8.xx
+## 0.8.1-evfree-attach-eval
 
-TBD
+- default iOS location fix
+- detach operation
 
 ## cordova-sqlite-storage 0.8.4-dev
 
@@ -12,6 +13,10 @@ TBD
 
 - Workaround fix for empty readTransaction issue (litehelpers/Cordova-sqlite-storage#409)
 - Split spec/www/spec/legacy.js into db-open-close-delete-test.js & tx-extended.js
+
+## 0.8.0-evfree-attach-eval
+
+- Database attach operation
 
 ## cordova-sqlite-ext 0.8.0
 

@@ -2,7 +2,7 @@
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
     id="cordova-sqlite-evfree-attach-eval"
-    version="0.8.xx-evfree-attach-eval">
+    version="0.8.1-evfree-attach-eval">
 
     <name>Cordova sqlite storage plugin with ATTACH (evaluation)</name>
 
