@@ -1,6 +1,6 @@
 # Changes
 
-## 0.8.1-evfree-attach-eval
+## cordova-sqlite-evfree-ext 0.8.1
 
 - default iOS location fix
 - detach operation
@@ -17,6 +17,11 @@
 ## 0.8.0-evfree-attach-eval
 
 - Database attach operation
+
+## cordova-sqlite-evfree 0.8.2-rc
+
+- Multi-part transactions API (see README.md)
+- URI encoding workaround for Cordova BUG CB-9435 (iOS *only*)
 
 ## cordova-sqlite-ext 0.8.0
 
