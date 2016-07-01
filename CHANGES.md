@@ -1,5 +1,12 @@
 # Changes
 
+## cordova-sqlite-evplus-legacy-attach-detach-free 0.8.2-pre1
+
+- Support location: 'default' setting in openDatabase & deleteDatabase
+- Drop support for non-default location values in sqlitePlugin.openDatabase and sqlitePlugin.deleteDatabase
+- Fix sqlitePlugin.deleteDatabase to check that db name is really a string (prevents possible crash on iOS)
+- Drop engine requirement in package.json
+
 ## cordova-sqlite-evfree-ext 0.8.1
 
 - default iOS location fix

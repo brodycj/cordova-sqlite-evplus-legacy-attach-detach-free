@@ -116,7 +116,6 @@ Contact for commercial license: info@litehelpers.net
       dbname = second;
     } else {
       dbname = second.name;
-      location = second.location;
     }
     dblocation = dblocations[location];
     args = {
@@ -768,8 +767,8 @@ Contact for commercial license: info@litehelpers.net
     If this function is edited in Javascript then someone will
     have to translate it back to CoffeeScript by hand.
      */
-    opendb: argsArray(function(args) {
-      var dblocation, errorcb, first, okcb, openargs;
+    openDatabase: argsArray(function(args) {
+      var errorcb, first, okcb, openargs;
       if (args.length < 1) {
         return null;
       }
@@ -795,9 +794,11 @@ Contact for commercial license: info@litehelpers.net
             errorcb = args[2];
           }
         }
+        if (openargs.location !== void 0 && openargs.location !== 2 && openargs.location !== 'default') {
+          throw newSQLError('Incorrect or unsupported iOS database location value in openDatabase call');
+        }
       }
-      dblocation = !!openargs.location ? dblocations[openargs.location] : null;
-      openargs.dblocation = dblocation || dblocations[2];
+      openargs.dblocation = dblocations[2];
       if (!!openargs.createFromLocation && openargs.createFromLocation === 1) {
         openargs.createFromResource = "1";
       }
@@ -809,8 +810,8 @@ Contact for commercial license: info@litehelpers.net
       }
       return new SQLitePlugin(openargs, okcb, errorcb);
     }),
-    deleteDb: function(first, success, error) {
-      var args, dblocation;
+    deleteDatabase: function(first, success, error) {
+      var args, dbname;
       args = {};
       if (first.constructor === String) {
         args.path = first;
@@ -819,9 +820,15 @@ Contact for commercial license: info@litehelpers.net
         if (!(first && first['name'])) {
           throw new Error("Please specify db name");
         }
-        args.path = first.name;
-        dblocation = !!first.location ? dblocations[first.location] : null;
-        args.dblocation = dblocation || dblocations[2];
+        dbname = first.name;
+        if (typeof dbname !== 'string') {
+          throw newSQLError('delete database name must be a string');
+        }
+        args.path = dbname;
+        if (first.location !== void 0 && first.location !== 2 && first.location !== 'default') {
+          throw newSQLError('Incorrect or unsupported iOS database location value in deleteDatabase call');
+        }
+        args.dblocation = dblocations[2];
       }
       delete SQLitePlugin.prototype.openDBs[args.path];
       delete SQLitePlugin.prototype.a1map[args.path];
@@ -851,8 +858,8 @@ Contact for commercial license: info@litehelpers.net
         }
       ]);
     },
-    openDatabase: SQLiteFactory.opendb,
-    deleteDatabase: SQLiteFactory.deleteDb
+    openDatabase: SQLiteFactory.openDatabase,
+    deleteDatabase: SQLiteFactory.deleteDatabase
   };
 
 }).call(this);

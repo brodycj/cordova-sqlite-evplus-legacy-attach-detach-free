@@ -483,7 +483,7 @@ var mytests = function() {
 
   }
 
-  describe('Plugin - BASIC sqlitePlugin.openDatabase test(s)', function() {
+  describe('Plugin - BASIC sqlitePlugin.openDatabase parameter check test(s)', function() {
 
     var suiteName = 'plugin: ';
 
@@ -503,7 +503,7 @@ var mytests = function() {
               done();
             }, function(error) {
               // OK but NOT EXPECTED:
-              expect(true).toBe(true);
+              expect('BEHAVIOR CHANGED please update this test').toBe('--');
               done();
             });
           } catch (e) {

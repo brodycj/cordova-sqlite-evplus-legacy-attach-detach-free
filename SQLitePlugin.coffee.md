@@ -139,7 +139,8 @@
 
       else
         dbname = second.name
-        location = second.location
+        # ignored for ATTACH in this version:
+        #location = second.location
 
       dblocation = dblocations[location]
 
@@ -776,7 +777,7 @@
       If this function is edited in Javascript then someone will
       have to translate it back to CoffeeScript by hand.
       ###
-      opendb: argsArray (args) ->
+      openDatabase: argsArray (args) ->
         if args.length < 1 then return null
 
         first = args[0]
@@ -798,8 +799,10 @@
             okcb = args[1]
             if args.length > 2 then errorcb = args[2]
 
-        dblocation = if !!openargs.location then dblocations[openargs.location] else null
-        openargs.dblocation = dblocation || dblocations[2]
+          if openargs.location isnt undefined and openargs.location isnt 2 and openargs.location isnt 'default'
+            throw newSQLError 'Incorrect or unsupported iOS database location value in openDatabase call'
+
+        openargs.dblocation = dblocations[2]
 
         if !!openargs.createFromLocation and openargs.createFromLocation == 1
           openargs.createFromResource = "1"
@@ -812,7 +815,7 @@
 
         new SQLitePlugin openargs, okcb, errorcb
 
-      deleteDb: (first, success, error) ->
+      deleteDatabase: (first, success, error) ->
         args = {}
 
         if first.constructor == String
@@ -823,9 +826,17 @@
         else
           #console.log "delete db args: #{JSON.stringify first}"
           if !(first and first['name']) then throw new Error "Please specify db name"
-          args.path = first.name
-          dblocation = if !!first.location then dblocations[first.location] else null
-          args.dblocation = dblocation || dblocations[2]
+          dbname = first.name
+
+          if typeof dbname != 'string'
+            throw newSQLError 'delete database name must be a string'
+
+          args.path = dbname
+
+          if first.location isnt undefined and first.location isnt 2 and first.location isnt 'default'
+            throw newSQLError 'Incorrect or unsupported iOS database location value in deleteDatabase call'
+
+          args.dblocation = dblocations[2]
 
         # XXX [BUG #210] TODO: when closing or deleting a db, abort any pending transactions (with error callback)
         delete SQLitePlugin::openDBs[args.path]
@@ -851,8 +862,8 @@
 
         cordova.exec okcb, errorcb, "SQLitePlugin", "echoStringValue", [{value:'test-string'}]
 
-      openDatabase: SQLiteFactory.opendb
-      deleteDatabase: SQLiteFactory.deleteDb
+      openDatabase: SQLiteFactory.openDatabase
+      deleteDatabase: SQLiteFactory.deleteDatabase
 
 ## vim directives
 

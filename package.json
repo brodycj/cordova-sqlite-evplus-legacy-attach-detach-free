@@ -1,9 +1,9 @@
 {
-  "name": "cordova-sqlite-evfree-ext",
-  "version": "0.8.1",
-  "description": "Cordova sqlite storage - free enterprise version with memory improvements and extras (Android and iOS)",
+  "name": "cordova-sqlite-evplus-legacy-attach-detach-free",
+  "version": "0.8.2-pre1",
+  "description": "Cordova sqlite storage - premium enterprise version with legacy support for memory improvements, ATTACH/DETACH, and other extras (Android and iOS)",
   "cordova": {
-    "id": "cordova-sqlite-evfree-ext",
+    "id": "cordova-sqlite-evplus-legacy-attach-detach-free",
     "platforms": [
       "android",
       "ios"
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/litehelpers/Cordova-sqlite-evfree-ext.git"
+    "url": "https://github.com/litehelpers/Cordova-sqlite-evplus-legacy-attach-detach-free.git"
   },
   "keywords": [
     "sqlite",
@@ -19,16 +19,10 @@
     "cordova-android",
     "cordova-ios"
   ],
-  "engines": [
-    {
-      "name": "cordova",
-      "version": ">=3.3.0"
-    }
-  ],
   "author": "various",
   "license": "GPL",
   "bugs": {
-    "url": "https://github.com/litehelpers/Cordova-sqlite-evfree-ext/issues"
+    "url": "https://github.com/litehelpers/Cordova-sqlite-evplus-legacy-attach-detach-free/issues"
   },
-  "homepage": "https://github.com/litehelpers/Cordova-sqlite-evfree-ext"
+  "homepage": "https://github.com/litehelpers/Cordova-sqlite-evplus-legacy-attach-detach-free"
 }

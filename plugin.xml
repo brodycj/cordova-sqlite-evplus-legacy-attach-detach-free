@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    id="cordova-sqlite-evfree-attach-eval"
-    version="0.8.1">
+    id="cordova-sqlite-evplus-legacy-attach-detach-free"
+    version="0.8.2-pre1">
 
-    <name>Cordova sqlite storage - free enterprise version with memory improvements and extras (Android and iOS)</name>
+    <name>Cordova sqlite storage - premium enterprise version with legacy support for memory improvements, ATTACH/DETACH, and other extras (Android and iOS)</name>
 
     <license>MIT</license>
 
