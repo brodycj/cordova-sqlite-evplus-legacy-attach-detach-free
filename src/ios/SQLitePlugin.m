@@ -155,7 +155,7 @@ sqlite_regexp(sqlite3_context * context, int argc, sqlite3_value ** values) {
 
         if (dbPointer != NULL) {
             NSLog(@"Reusing existing database connection for db name %@", dbfilename);
-            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Database opened"];
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"a1i"];
         } else {
             const char *name = [dbname UTF8String];
             sqlite3 *db;
