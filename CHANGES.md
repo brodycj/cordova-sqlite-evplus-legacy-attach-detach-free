@@ -1,5 +1,7 @@
 # Changes
 
+## cordova-sqlite-evplus-legacy-attach-detach-free 0.8.3-dev1
+
 ## cordova-sqlite-evplus-legacy-attach-detach-free 0.8.2-pre2
 
 - Fix iOS version to handle page reloads & location changes
