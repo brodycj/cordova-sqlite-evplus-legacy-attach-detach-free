@@ -36,6 +36,8 @@ var mytests = function() {
 
       it(suiteName + 'Pre-populated database test',
         function(done) {
+          if (isWindows) pending('BROKEN for Windows'); // XXX
+
           var dbc1 = window.sqlitePlugin.openDatabase({
             name: 'pre.db',
             createFromLocation: 1,
@@ -103,6 +105,7 @@ var mytests = function() {
 
       it(suiteName + 'Pre-populated blob database test', function(done) {
           if (isAndroid && !isOldDatabaseImpl) pending('BROKEN for default Android-sqlite-connector version'); // XXX
+          if (isWindows) pending('BROKEN for Windows'); // XXX
 
           var dbc1 = window.sqlitePlugin.openDatabase({
             name: 'blob-pre.db',

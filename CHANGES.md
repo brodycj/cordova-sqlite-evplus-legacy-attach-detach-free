@@ -1,6 +1,12 @@
 # Changes
 
-## cordova-sqlite-evplus-legacy-attach-detach-free 0.8.3-dev1
+## cordova-sqlite-evplus-legacy-attach-detach-free 0.8.3-pre1
+
+## 0.8.0-common-dev
+
+- Introduce Windows 10 UWP build (Windows 8.1 and Windows Phone 8.1 build disabled)
+- TBD DISABLED: Separate SQLiteConnectorDatabase class for Android
+- Renamed SQLiteProxy.js to sqlite-proxy.js in Windows version
 
 ## cordova-sqlite-evplus-legacy-attach-detach-free 0.8.2-pre2
 
@@ -44,8 +50,6 @@
 - Simple sql batch transaction function
 - Echo test function
 - Remove extra runInBackground: step from iOS version
-- Android-sqlite-connector (NDK) support removed from this version branch
-- Windows version removed from this version branch
 - Java source of Android version now using io.sqlc package
 
 ## 0.7.15-pre

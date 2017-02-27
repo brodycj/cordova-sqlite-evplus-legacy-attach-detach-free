@@ -1,12 +1,13 @@
 {
   "name": "cordova-sqlite-evplus-legacy-attach-detach-free",
-  "version": "0.8.3-dev1",
-  "description": "Cordova sqlite storage - premium enterprise version with legacy support for memory improvements, ATTACH/DETACH, and other extras (Android and iOS)",
+  "version": "0.8.3-pre1",
+  "description": "Cordova sqlite storage - premium enterprise version with legacy support for memory improvements, ATTACH/DETACH (Android/iOS), and other extras",
   "cordova": {
     "id": "cordova-sqlite-evplus-legacy-attach-detach-free",
     "platforms": [
       "android",
-      "ios"
+      "ios",
+      "windows"
     ]
   },
   "repository": {
@@ -17,7 +18,8 @@
     "sqlite",
     "ecosystem:cordova",
     "cordova-android",
-    "cordova-ios"
+    "cordova-ios",
+    "cordova-windows"
   ],
   "author": "various",
   "license": "GPL",
