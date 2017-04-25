@@ -2,9 +2,9 @@
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
     id="cordova-sqlite-evplus-legacy-attach-detach-free"
-    version="0.8.3-pre2a">
+    version="0.8.3-pre2b">
 
-    <name>Cordova sqlite storage - premium enterprise version with legacy support for memory improvements, ATTACH/DETACH, and other extras (Android and iOS)</name>
+    <name>Cordova sqlite storage - premium enterprise version with legacy support for memory improvements, ATTACH/DETACH (Android/iOS), and other extra features</name>
 
     <license>MIT</license>
 
@@ -80,11 +80,10 @@
 
         <!-- Thanks to AllJoyn-Cordova / cordova-plugin-alljoyn: -->
         <framework src="src/windows/SQLite3-Win-RT/SQLite3/SQLite3.UWP/SQLite3.UWP.vcxproj" custom="true" type="projectReference" />
-        <!-- TBD (NOT supported by Visual Studio Express 2015):
+        <!-- TBD Windows 8.1/Windows Phone 8.1 NOT supported by this version branch:
         <framework src="src/windows/SQLite3-Win-RT/SQLite3/SQLite3.Windows/SQLite3.Windows.vcxproj" custom="true" type="projectReference" target="windows" />
         <framework src="src/windows/SQLite3-Win-RT/SQLite3/SQLite3.WindowsPhone/SQLite3.WindowsPhone.vcxproj" custom="true" type="projectReference" target="phone" />
          -->
-
     </platform>
 
 </plugin>
