@@ -1,13 +1,13 @@
 # Changes
 
-## cordova-sqlite-evplus-legacy-attach-detach-free 0.8.3-pre2c
+## cordova-sqlite-evplus-legacy-attach-detach-free 0.8.3-pre2d
 
 - Drop engines constraint from plugin.xml in this version branch
 
 ### cordova-sqlite-common 0.8.0-common-dev
 
 - Introduce Windows 10 UWP build (Windows 8.1 and Windows Phone 8.1 build disabled)
-- TBD DISABLED: Separate SQLiteConnectorDatabase class for Android
+- TBD NOT CURRENTLY USED by this version branch: Separate SQLiteConnectorDatabase class for Android
 - Renamed SQLiteProxy.js to sqlite-proxy.js in Windows version
 
 ## cordova-sqlite-evplus-legacy-attach-detach-free 0.8.2-pre2
