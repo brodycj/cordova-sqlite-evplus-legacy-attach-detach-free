@@ -373,7 +373,7 @@ var mytests = function() {
         });
 
 
-        // Issue on Android[WORKAROUND for iOS (TBD: macOS) in this version branch]
+        // Issue on Android [WORKAROUND for iOS/macOS in this version branch]
         // For reference:
         // - litehelpers/Cordova-sqlite-storage#147
         // - cordova/cordova-discuss#57 (issue with cordova-android)

@@ -188,7 +188,7 @@ var mytests = function() {
           });
         });
 
-        // NOTE: the next 2 tests show that on Android [WORKAROUND for iOS (TBD: macOS) in this version branch]:
+        // NOTE: the next 2 tests show that on Android [WORKAROUND for iOS/macOS in this version branch]:
         // - UNICODE \u2028 line separator from JavaScript to native (Java) is working OK
         // - UNICODE \u2028 line separator from native (Java) to JavaScript is BROKEN
         // For reference:
@@ -238,7 +238,7 @@ var mytests = function() {
         });
 
         // NOTE: the next 2 tests repeat the above for UNICODE \u2029 paragraph separator
-        // on Android/iOS (TBD: macOS) [WORKAROUND for iOS (TBD: macOS) in this version branch]:
+        // on Android/iOS/macOS [WORKAROUND for iOS/macOS in this version branch]:
         // - UNICODE \u2029 paragraph separator from JavaScript to native (Java) is working OK
         // - UNICODE \u2029 paragraph separator from native (Java) to JavaScript is BROKEN
         // For reference:

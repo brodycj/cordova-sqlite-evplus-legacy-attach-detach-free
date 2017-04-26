@@ -1,6 +1,6 @@
-# Cordova/PhoneGap sqlite storage - premium enterprise version with legacy support for memory improvements, ATTACH/DETACH (Android/iOS), and TBD other extra features
+# Cordova/PhoneGap sqlite storage - premium enterprise version with legacy support for memory improvements, ATTACH/DETACH (Android/iOS/macOS), and TBD other extra features
  
-Native interface to sqlite in a Cordova/PhoneGap plugin for Android, iOS, and Windows 10 UWP (Universal Windows Platform), with API similar to HTML5/[Web SQL API](http://www.w3.org/TR/webdatabase/).
+Native interface to sqlite in a Cordova/PhoneGap plugin for Android, iOS, macOS, and Windows 10 UWP (Universal Windows Platform), with API similar to HTML5/[Web SQL API](http://www.w3.org/TR/webdatabase/).
 
 This version includes memory improvements and TBD other extra features.
 
@@ -44,7 +44,7 @@ As documented in the "**A User’s iCloud Storage Is Limited**" section of [iClo
 - Patches patches will *NOT* be accepted on this project due to potential licensing issues.
 - Status for the target platforms:
   - Android: now using [Android-sqlite-connector](https://github.com/liteglue/Android-sqlite-connector) (with sqlite `3.8.10.2`), with support for FTS3/FTS4 and R-Tree, and REGEXP support using PCRE 8.37 as built from [liteglue / Android-sqlite-native-driver-regexp-pcre](https://github.com/liteglue/Android-sqlite-native-driver-regexp-pcre)
-  - iOS/Windows: sqlite `3.8.10.2` embedded
+  - iOS/macOS/Windows: sqlite `3.8.10.2` embedded
 - Windows version is TBD:
   - Issue with UNICODE `\u0000` character (same as `\0`)
   - No background processing (for future consideration)
@@ -54,27 +54,24 @@ As documented in the "**A User’s iCloud Storage Is Limited**" section of [iClo
 
 ## Announcements
 
-- Support for reading BLOB values (from pre-populated databases) for Android and iOS
+- Support for reading BLOB values (from pre-populated databases) for Android/iOS/macOS
 - ATTACH/DETACH is now supported as described below.
 - Windows 10 UWP is now supported by this version
 - Added simple sql batch query function
 - Added echo test function to verify installation of this plugin
-- Pre-populated database support for Android, iOS, ~~and Windows (TBD BROKEN)~~, usage described below
-- All iOS operations are now using background processing (reported to resolve intermittent problems with cordova-ios@4.0.1)
+- Pre-populated database support for Android, iOS, macOS, ~~and Windows (TBD BROKEN)~~, usage described below
 - Published [brodybits / Cordova-quick-start-checklist](https://github.com/brodybits/Cordova-quick-start-checklist) and [brodybits / Cordova-troubleshooting-guide](https://github.com/brodybits/Cordova-troubleshooting-guide)
-- REGEXP is now supported for Android and iOS platforms.
+- REGEXP is now supported for Android/iOS/macOS platforms.
 - This version has the following improvement(s):
-  - iOS version can now handle all UNICODE characters, using URI encoding as a workaround for [Cordova bug CB-9435](https://issues.apache.org/jira/browse/CB-9435).
+  - iOS/macOS version can now handle all UNICODE characters, using URI encoding as a workaround for [Cordova bug CB-9435](https://issues.apache.org/jira/browse/CB-9435).
   - Multi-part transactions API (described below)
   - TBD *missing in this version*: ~~Error result with proper Web SQL `code` member and `sqliteCode` as reported by the SQLite C library (Android/iOS)~~
   - flat JSON interface between Javascript and native parts
   - *optional*: transaction sql chunking, which can be enabled by changing the `MAX_SQL_CHUNK` value in SQLitePlugin.js
 - A version with support for web workers is available at: [litehelpers / Cordova-sqlite-evplus-legacy-workers-free](https://github.com/litehelpers/Cordova-sqlite-evplus-legacy-workers-free)
-- All iOS operations are now using background processing (reported to resolve intermittent problems with cordova-ios@4.0.1)
 - Published [brodybits / Cordova-quick-start-checklist](https://github.com/brodybits/Cordova-quick-start-checklist) and [brodybits / Cordova-troubleshooting-guide](https://github.com/brodybits/Cordova-troubleshooting-guide)
 - PhoneGap Build is now supported through the npm package: http://phonegap.com/blog/2015/05/26/npm-plugins-available/ (Android/iOS ONLY)
 - [MetaMemoryT / websql-promise](https://github.com/MetaMemoryT/websql-promise) now provides a Promises-based interface to both Web SQL and this plugin
-- iOS version is now fixed to override the correct pluginInitialize method and should work with recent versions of iOS
 - Fixes to work with PouchDB by [@nolanlawson](https://github.com/nolanlawson)
 
 ## Highlights
@@ -102,7 +99,7 @@ TBD *your app here*
 - Possible crash on Android when using Unicode emoji and other 4-octet UTF-8 characters due to [Android bug 81341](https://code.google.com/p/android/issues/detail?id=81341), which *should* be fixed in Android 6.x
 - In-memory database `db=window.sqlitePlugin.openDatabase({name: ":memory:"})` is currently not supported.
 - Close database bugs described below.
-- When a database is opened and deleted without closing, the iOS version is known to leak resources.
+- When a database is opened and deleted without closing, the iOS (TBD: macOS) version is known to leak resources.
 - Problems reported with PhoneGap Build in the past:
   - PhoneGap Build Hydration.
   - Apparently FIXED: ~~PhoneGap Build may fail to build the iOS version unless the name of the app starts with an uppercase and contains no spaces (see [litehelpers/Cordova-sqlite-storage#243](https://github.com/litehelpers/Cordova-sqlite-storage/issues/243); [Wizcorp/phonegap-facebook-plugin#830](https://github.com/Wizcorp/phonegap-facebook-plugin/issues/830); [phonegap/build#431](https://github.com/phonegap/build/issues/431)).~~
@@ -115,11 +112,11 @@ TBD *your app here*
 - This version will not work within a web worker (not properly supported by the Cordova framework). Version with support for web workers, along with the memory and iOS Unicode character fixes from this project (*does not yet support attached databases*) at: [litehelpers / Cordova-sqlite-evplus-legacy-workers-free](https://github.com/litehelpers/Cordova-sqlite-evplus-legacy-workers-free)
 - In-memory database `db=window.sqlitePlugin.openDatabase({name: ":memory:"})` is currently not supported.
 - The Android version cannot work with more than 100 open db files (due to the threading model used).
-- UNICODE `\u2028` (line separator) and `\u2029` (paragraph separator) characters are currently not supported and known to be broken on Android version due to JSON issue reported in [cordova/cordova-discuss#57](https://github.com/cordova/cordova-discuss/issues/57) (workaround fix for iOS in this version branch). There *may* be a similar issue with certain other UNICODE characters on Android (needs further investigation).
+- UNICODE `\u2028` (line separator) and `\u2029` (paragraph separator) characters are currently not supported and known to be broken on Android version due to JSON issue reported in [cordova/cordova-discuss#57](https://github.com/cordova/cordova-discuss/issues/57) (workaround fix for iOS/macOS in this version branch). There *may* be a similar issue with certain other UNICODE characters on Android (needs further investigation).
 - Blob type is not fully supported on Windows. SELECT BLOB in Base64 format is supported by [litehelpers / cordova-sqlite-ext](https://github.com/litehelpers/cordova-sqlite-ext) (permissive license terms) and [litehelpers / Cordova-sqlite-evcore-extbuild-free](https://github.com/litehelpers/Cordova-sqlite-evcore-extbuild-free) (GPL or commercial license options).
 - Truncation in case of UNICODE `\u0000` (same as `\0`) character on Android (default Android-sqlite-connector database implementation) and Windows
 - Case-insensitive matching and other string manipulations on Unicode characters, which is provided by optional ICU integration in the sqlite source and working with recent versions of Android, is not supported for any target platforms.
-- iOS version uses a thread pool but with only one thread working at a time due to "synchronized" database access
+- iOS/macOS version uses a thread pool but with only one thread working at a time due to "synchronized" database access
 - Large query result can be slow, also due to JSON implementation
 - User-defined savepoints are not supported and not expected to be compatible with the transaction locking mechanism used by this plugin. In addition, the use of BEGIN/COMMIT/ROLLBACK statements is not supported.
 - Problems have been reported when using this plugin with Crosswalk (for Android). A couple of things you can try:
@@ -226,7 +223,7 @@ There are two options to open a database access object:
 - **Recommended:** `var db = window.sqlitePlugin.openDatabase({name: 'my.db', location: 'default'}, successcb, errorcb);`
 - **Classical:** `var db = window.sqlitePlugin.openDatabase("myDatabase.db", "1.0", "Demo", -1);`
 
-The `location` option is used to specify the database subdirectory location (iOS *only*):
+The `location` option is used to specify the database subdirectory location (iOS/macOS *only*):
 - ~~`0`: `Documents` - visible to iTunes and backed up by iCloud~~ (disabled in this version)
 - ~~`1`: `Library` - backed up by iCloud, *NOT* visible to iTunes~~ (disabled in this version)
 - `2` *(default)*: `Library/LocalDatabase` - *NOT* visible to iTunes and *NOT* backed up by iCloud (same as using "default")
@@ -498,7 +495,7 @@ IMPORTANT NOTES:
 
 The threading model depends on which version is used:
 - For Android, one background thread per db;
-- for iOS, background processing using a very limited thread pool (only one thread working at a time);
+- for iOS/macOS, background processing using a very limited thread pool (only one thread working at a time);
 - for Windows, no background processing (for future consideration).
 
 ## Sample with PRAGMA feature
@@ -819,7 +816,7 @@ Free support for issues with Angular/"ngCordova"/Ionic will only be provided if 
 ## What information is needed for help
 
 Please include the following:
-- Which platform(s) (Android/iOS/Windows)
+- Which platform(s) (Android/iOS/macOS/Windows)
 - Clear description of the issue
 - A small, complete, self-contained program that demonstrates the problem, preferably as a Github project. ZIP/TGZ/BZ2 archive available from a public link is OK. No RAR or other such formats please!
 - A Cordova project is highly preferred. Intel, MS IDE, or similar project formats should be avoided.
