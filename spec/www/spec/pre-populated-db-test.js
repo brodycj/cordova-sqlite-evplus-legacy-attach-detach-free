@@ -36,7 +36,7 @@ var mytests = function() {
 
       it(suiteName + 'Pre-populated database test',
         function(done) {
-          if (isWindows) pending('BROKEN for Windows'); // XXX
+          if (isWindows) pending('BROKEN on Windows'); // XXX TODO
 
           var dbc1 = window.sqlitePlugin.openDatabase({
             name: 'pre.db',

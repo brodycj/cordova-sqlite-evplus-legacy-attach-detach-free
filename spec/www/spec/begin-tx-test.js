@@ -10,19 +10,19 @@ var pluginScenarioCount = isAndroid ? 2 : 1;
 
 var mytests = function() {
 
-  for (var i=0; i<scenarioCount; ++i) {
+  for (var i=0; i<pluginScenarioCount; ++i) {
 
-    describe(pluginScenarioCount[i] + ': multi-part tx test(s)', function() {
+    describe(pluginScenarioList[i] + ': multi-part tx test(s)', function() {
       var scenarioName = pluginScenarioCount[i];
       var suiteName = scenarioName + ': ';
-      var isOldDatabaseImpl = (i === 1);
+      var isImpl2 = (i === 1);
 
       // NOTE: MUST be defined in function scope, NOT outer scope:
       var openDatabase = function(name, ignored1, ignored2, ignored3) {
-        if (isOldDatabaseImpl) {
+        if (isImpl2) {
           return window.sqlitePlugin.openDatabase({name: 'i2-'+name, androidDatabaseImplementation: 2});
         } else {
-          return window.sqlitePlugin.openDatabase(name, "1.0", "Demo", DEFAULT_SIZE);
+          return window.sqlitePlugin.openDatabase(name, '1.0', 'Test', DEFAULT_SIZE);
         }
       }
 

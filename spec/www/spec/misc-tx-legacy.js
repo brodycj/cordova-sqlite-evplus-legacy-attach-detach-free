@@ -32,17 +32,14 @@ function start(n) {
 
 var isAndroid = /Android/.test(navigator.userAgent);
 var isWP8 = /IEMobile/.test(navigator.userAgent); // Matches WP(7/8/8.1)
-//var isWindows = /Windows NT/.test(navigator.userAgent); // Windows [NT] (8.1)
 var isWindows = /Windows /.test(navigator.userAgent); // Windows (8.1)
-//var isWindowsPC = /Windows NT/.test(navigator.userAgent); // Windows [NT] (8.1)
-//var isWindowsPhone_8_1 = /Windows Phone 8.1/.test(navigator.userAgent); // Windows Phone 8.1
-//var isIE = isWindows || isWP8 || isWindowsPhone_8_1;
 var isIE = isWindows || isWP8;
 var isWebKit = !isIE; // TBD [Android or iOS]
 
-// NOTE: In the core-master branch there is no difference between the default
-// implementation and implementation #2. But the test will also apply
-// the androidLockWorkaround: 1 option in the case of implementation #2.
+// NOTE: While in certain version branches there is no difference between
+// the default Android implementation and implementation #2,
+// this test script will also apply the androidLockWorkaround: 1 option
+// in case of implementation #2.
 var scenarioList = [
   isAndroid ? 'Plugin-implementation-default' : 'Plugin',
   'HTML5',
@@ -59,11 +56,11 @@ var mytests = function() {
       var scenarioName = scenarioList[i];
       var suiteName = scenarioName + ': ';
       var isWebSql = (i === 1);
-      var isOldImpl = (i === 2);
+      var isImpl2 = (i === 2);
 
       // NOTE: MUST be defined in function scope, NOT outer scope:
       var openDatabase = function(name, ignored1, ignored2, ignored3) {
-        if (isOldImpl) {
+        if (isImpl2) {
           return window.sqlitePlugin.openDatabase({
             // prevent reuse of database from default db implementation:
             name: 'i2-'+name,
@@ -72,9 +69,9 @@ var mytests = function() {
           });
         }
         if (isWebSql) {
-          return window.openDatabase(name, "1.0", "Demo", DEFAULT_SIZE);
+          return window.openDatabase(name, '1.0', 'Test', DEFAULT_SIZE);
         } else {
-          return window.sqlitePlugin.openDatabase(name, "1.0", "Demo", DEFAULT_SIZE);
+          return window.sqlitePlugin.openDatabase(name, '1.0', 'Test', DEFAULT_SIZE);
         }
       }
 
@@ -101,7 +98,8 @@ var mytests = function() {
               if (isWebSql || !(isAndroid || isWindows || isWP8))
                 ok(!!error['code'], "valid error.code exists");
 
-              ok(error.hasOwnProperty('message'), "error.message exists");
+              // XXX TBD:
+              //ok(error.hasOwnProperty('message'), "error.message exists");
               // XXX ONLY WORKING for iOS version of plugin:
               if (isWebSql || !(isAndroid || isWindows || isWP8))
                 strictEqual(error.code, 5, "error.code === SQLException.SYNTAX_ERR (5)");
@@ -113,7 +111,8 @@ var mytests = function() {
             });
           }, function (error) {
             ok(!!error, "valid error object");
-            ok(error.hasOwnProperty('message'), "error.message exists");
+            // XXX TBD:
+            //ok(error.hasOwnProperty('message'), "error.message exists");
             start();
           });
         });
@@ -147,7 +146,8 @@ var mytests = function() {
               if (isWebSql || !(isAndroid || isWindows || isWP8))
                 ok(!!error['code'], "valid error.code exists");
 
-              ok(error.hasOwnProperty('message'), "error.message exists");
+              // XXX TBD:
+              //ok(error.hasOwnProperty('message'), "error.message exists");
               //strictEqual(error.code, 6, "error.code === SQLException.CONSTRAINT_ERR (6)");
               //equal(error.message, "Request failed: insert into test_table (data) VALUES (?),123", "error.message");
               start();
@@ -157,7 +157,8 @@ var mytests = function() {
             });
           }, function(error) {
             ok(!!error, "valid error object");
-            ok(error.hasOwnProperty('message'), "error.message exists");
+            // XXX TBD:
+            //ok(error.hasOwnProperty('message'), "error.message exists");
             start();
           });
         });
@@ -226,11 +227,11 @@ var mytests = function() {
       describe(scenarioList[i] + ': plugin-specific sql test(s)', function() {
         var scenarioName = scenarioList[i];
         var suiteName = scenarioName + ': ';
-        var isOldAndroidImpl = (i === 1);
+        var isImpl2 = (i === 1);
 
         // NOTE: MUST be defined in function scope, NOT outer scope:
         var openDatabase = function(first, second, third, fourth, fifth, sixth) {
-          if (!isOldAndroidImpl) {
+          if (!isImpl2) {
             return window.sqlitePlugin.openDatabase(first, second, third, fourth, fifth, sixth);
           }
 

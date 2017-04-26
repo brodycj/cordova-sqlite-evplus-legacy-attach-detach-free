@@ -9,7 +9,7 @@ var isWindows = /Windows /.test(navigator.userAgent); // Windows (8.1)
 
 // NOTE: ATTACH not yet implemented for default Android-sqlite-connector db implementation
 //var pluginScenarioList = [ isAndroid ? 'Plugin-xx-default' : 'Plugin', 'Plugin-xx-2' ];
-var scenarioList = [ isAndroid ? 'Plugin-android.database' : 'Plugin' ];
+var pluginScenarioList = [ isAndroid ? 'Plugin-android.database' : 'Plugin' ];
 
 var pluginScenarioCount = 1;
 // FUTURE:
@@ -19,25 +19,13 @@ var mytests = function() {
 
   for (var i=0; i<pluginScenarioCount; ++i) {
 
-    describe(scenarioList[i] + ': ATTACH/DETACH test(s)', function() {
-      var scenarioName = scenarioList[i];
+    describe(pluginScenarioList[i] + ': ATTACH/DETACH test(s)', function() {
+      var scenarioName = pluginScenarioList[i];
       var suiteName = scenarioName + ': ';
 
-      var isOldDatabaseImpl = true;
+      var isImpl2 = true;
       // FUTURE:
-      //var isOldDatabaseImpl = (i === 1);
-
-      // NOTE: MUST be defined in function scope, NOT outer scope:
-      var openDatabase = function(name, ignored1, ignored2, ignored3) {
-        if (isOldImpl) {
-          return window.sqlitePlugin.openDatabase({name: name, androidDatabaseImplementation: 2});
-        }
-        if (isWebSql) {
-          return window.openDatabase(name, "1.0", "Demo", DEFAULT_SIZE);
-        } else {
-          return window.sqlitePlugin.openDatabase(name, "1.0", "Demo", DEFAULT_SIZE);
-        }
-      }
+      //var isImpl2 = (i === 1);
 
       it(suiteName + 'preliminary cleanup 1',
         function(done) {
@@ -53,11 +41,11 @@ var mytests = function() {
 
       it(suiteName + 'ATTACH/PRAGMA database_list/DETACH test',
         function(done) {
-          if (isWindows) pending('BROKEN for Windows ("Universal")'); // XXX FUTURE TBD
+          if (isWindows) pending('NOT IMPLEMENTED for Windows'); // FUTURE TBD
 
           window.sqlitePlugin.openDatabase({
             name: 'attach-test-external.db',
-            androidDatabaseImplementation: isOldDatabaseImpl ? 2 : 0
+            androidDatabaseImplementation: isImpl2 ? 2 : 0
           }, function(db1) {
           db1.transaction(function(tx) {
             tx.executeSql('DROP TABLE IF EXISTS tt');
@@ -72,7 +60,7 @@ var mytests = function() {
 
               window.sqlitePlugin.openDatabase({
                 name: 'attach-test.db',
-                androidDatabaseImplementation: isOldDatabaseImpl ? 2 : 0
+                androidDatabaseImplementation: isImpl2 ? 2 : 0
               }, function(db2) {
                 db2.attach('ext_attached', 'attach-test-external.db', function() {
                   db2.executeSql('SELECT * from ext_attached.tt', [], function(res) {
