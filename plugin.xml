@@ -2,7 +2,7 @@
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
     id="cordova-sqlite-evplus-legacy-attach-detach-free"
-    version="0.8.3-pre2b">
+    version="0.8.3-pre2c">
 
     <name>Cordova sqlite storage - premium enterprise version with legacy support for memory improvements, ATTACH/DETACH (Android/iOS), and other extra features</name>
 
@@ -12,10 +12,6 @@
 
     <description>Native interface to SQLite for PhoneGap/Cordova. Allows you to use more storage and provides more flexibility than the standard Web SQL database (window.openDatabase).</description>
     <author>Litehelpers/Various</author>
-
-    <engines>
-        <engine name="cordova" version=">=3.3.0" />
-    </engines>
 
     <js-module src="www/SQLitePlugin.js" name="SQLitePlugin">
         <clobbers target="SQLitePlugin" />

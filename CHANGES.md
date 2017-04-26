@@ -1,6 +1,8 @@
 # Changes
 
-## cordova-sqlite-evplus-legacy-attach-detach-free 0.8.3-pre2b
+## cordova-sqlite-evplus-legacy-attach-detach-free 0.8.3-pre2c
+
+- Drop engines constraint from plugin.xml in this version branch
 
 ### cordova-sqlite-common 0.8.0-common-dev
 
