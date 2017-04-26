@@ -387,7 +387,7 @@ Contact for commercial license: info@litehelpers.net
   };
 
   SQLitePluginTransaction.prototype.start = function() {
-    var err, error1;
+    var err;
     try {
       this.fn(this);
       if (this.executes.length > 0) {
@@ -512,7 +512,7 @@ Contact for commercial license: info@litehelpers.net
     tx = this;
     handlerFor = function(index, didSucceed) {
       return function(response) {
-        var err, error1, sqlError;
+        var err, sqlError;
         try {
           if (didSucceed) {
             tx.handleStatementSuccess(batchExecutes[index].success, response);

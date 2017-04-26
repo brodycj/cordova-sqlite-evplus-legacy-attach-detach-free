@@ -1,6 +1,6 @@
 # Changes
 
-## cordova-sqlite-evplus-legacy-attach-detach-free 0.8.3-pre1
+## cordova-sqlite-evplus-legacy-attach-detach-free 0.8.3-pre2a
 
 ### cordova-sqlite-common 0.8.0-common-dev
 
