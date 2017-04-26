@@ -22,7 +22,8 @@
 - Cordova 2.7+ port with background processing by @j3k0 (Jean-Christophe Hoelt <hoelt@fovea.cc>)
 - Maintained by @brodybits (Chris Brody)
 
-## Windows (8.1/+) version
+## Windows version
 
 - SQLiteProxy.js by @vldmrrr (Vladimir Avdonin) and @brodybits (Chris Brody)
 - Using SQLite3-WinRT C++ classes and SQLite3JS (Javascript part) by @doo (doo GmbH)
+- Thanks to @AllJoyn-Cordova for idea how to integrate Windows 8.1/Windows Phone 8.1 Visual C++ projects in plugin.xml
