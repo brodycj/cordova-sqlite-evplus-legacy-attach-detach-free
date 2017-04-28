@@ -1,6 +1,6 @@
 # Changes
 
-## cordova-sqlite-evplus-legacy-attach-detach-free 0.8.3-pre4a
+## cordova-sqlite-evplus-legacy-attach-detach-free 0.8.3-pre4b
 
 - Support macOS ("osx") platform in this version branch
 - Drop engines constraint from plugin.xml in this version branch

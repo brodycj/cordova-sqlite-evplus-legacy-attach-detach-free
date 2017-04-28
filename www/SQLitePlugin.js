@@ -780,7 +780,7 @@ Contact for commercial license: info@litehelpers.net
     have to translate it back to CoffeeScript by hand.
      */
     openDatabase: argsArray(function(args) {
-      var dblocation, errorcb, okcb, openargs;
+      var errorcb, okcb, openargs;
       if (args.length < 1 || !args[0]) {
         throw newSQLError('Sorry missing mandatory open arguments object in openDatabase call');
       }
@@ -795,10 +795,12 @@ Contact for commercial license: info@litehelpers.net
         throw newSQLError('Database location or iosDatabaseLocation value is now mandatory in openDatabase call');
       }
       if (openargs.location !== void 0 && openargs.location !== 2 && openargs.location !== 'default') {
-        throw newSQLError('Incorrect or unsupported iOS database location value in openDatabase call');
+        throw newSQLError('Incorrect or unsupported database location value in openDatabase call');
       }
-      dblocation = !!openargs.location && openargs.location === 'default' ? iosLocationMap['default'] : !!openargs.iosDatabaseLocation ? iosLocationMap[openargs.iosDatabaseLocation] : dblocations[openargs.location];
-      openargs.dblocation = dblocation;
+      if (openargs.iosDatabaseLocation !== void 0 && openargs.iosDatabaseLocation !== 'default') {
+        throw newSQLError('Incorrect or unsupported iosDatabaseLocation value in openDatabase call');
+      }
+      openargs.dblocation = dblocations[2];
       if (!!openargs.createFromLocation && openargs.createFromLocation === 1) {
         openargs.createFromResource = "1";
       }
@@ -819,7 +821,7 @@ Contact for commercial license: info@litehelpers.net
       return new SQLitePlugin(openargs, okcb, errorcb);
     }),
     deleteDatabase: function(first, success, error) {
-      var args, dblocation, dbname;
+      var args, dbname;
       args = {};
       if (first.constructor === String) {
         throw newSQLError('Sorry first deleteDatabase argument must be an object');
@@ -832,15 +834,17 @@ Contact for commercial license: info@litehelpers.net
           throw newSQLError('delete database name must be a string');
         }
         if (first.location !== void 0 && first.location !== 2 && first.location !== 'default') {
-          throw newSQLError('Incorrect or unsupported iOS database location value in deleteDatabase call');
+          throw newSQLError('Incorrect or unsupported database location value in deleteDatabase call');
+        }
+        if (first.iosDatabaseLocation !== void 0 && first.iosDatabaseLocation !== 'default') {
+          throw newSQLError('Incorrect or unsupported iosDatabaseLocation value in deleteDatabase call');
         }
         args.path = first.name;
+        args.dblocation = dblocations[2];
       }
       if (!first.iosDatabaseLocation && !first.location && first.location !== 0) {
         throw newSQLError('Database location or iosDatabaseLocation value is now mandatory in deleteDatabase call');
       }
-      dblocation = !!first.location && first.location === 'default' ? iosLocationMap['default'] : !!first.iosDatabaseLocation ? iosLocationMap[first.iosDatabaseLocation] : dblocations[first.location];
-      args.dblocation = dblocation;
       delete SQLitePlugin.prototype.openDBs[args.path];
       delete SQLitePlugin.prototype.a1map[args.path];
       return cordova.exec(success, error, "SQLitePlugin", "delete", [args]);

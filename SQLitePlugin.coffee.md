@@ -853,29 +853,31 @@
         if !openargs.iosDatabaseLocation and !openargs.location and openargs.location isnt 0
           throw newSQLError 'Database location or iosDatabaseLocation value is now mandatory in openDatabase call'
 
+        # enforce default database location:
         if openargs.location isnt undefined and openargs.location isnt 2 and openargs.location isnt 'default'
-            throw newSQLError 'Incorrect or unsupported iOS database location value in openDatabase call'
-
-        # XXX TODO (PREVIOUS BEHAVIOR):
-        #openargs.dblocation = dblocations[2]
+            throw newSQLError 'Incorrect or unsupported database location value in openDatabase call'
+        if openargs.iosDatabaseLocation isnt undefined and openargs.iosDatabaseLocation isnt 'default'
+            throw newSQLError 'Incorrect or unsupported iosDatabaseLocation value in openDatabase call'
+        openargs.dblocation = dblocations[2]
 
         # XXX TODO (with test):
         #if !!openargs.location and !!openargs.iosDatabaseLocation
         #  throw newSQLError 'Abiguous: both location or iosDatabaseLocation values are present in openDatabase call'
 
-        dblocation =
-          if !!openargs.location and openargs.location is 'default'
-            iosLocationMap['default']
-          else if !!openargs.iosDatabaseLocation
-            iosLocationMap[openargs.iosDatabaseLocation]
-          else
-            dblocations[openargs.location]
-
+        # FUTURE TBD:
+        #dblocation =
+        #  if !!openargs.location and openargs.location is 'default'
+        #    iosLocationMap['default']
+        #  else if !!openargs.iosDatabaseLocation
+        #    iosLocationMap[openargs.iosDatabaseLocation]
+        #  else
+        #    dblocations[openargs.location]
+        #
         # XXX TODO (with test):
         #if !dblocation
         #  throw newSQLError 'Valid iOS database location could not be determined in openDatabase call'
-
-        openargs.dblocation = dblocation
+        #
+        #openargs.dblocation = dblocation
 
         if !!openargs.createFromLocation and openargs.createFromLocation == 1
           openargs.createFromResource = "1"
@@ -926,13 +928,15 @@
           # XXX TODO (PREVIOUS BEHAVIOR):
           #args.path = dbname
 
+          # enforce default database location:
           if first.location isnt undefined and first.location isnt 2 and first.location isnt 'default'
-            throw newSQLError 'Incorrect or unsupported iOS database location value in deleteDatabase call'
+            throw newSQLError 'Incorrect or unsupported database location value in deleteDatabase call'
+          if first.iosDatabaseLocation isnt undefined and first.iosDatabaseLocation isnt 'default'
+            throw newSQLError 'Incorrect or unsupported iosDatabaseLocation value in deleteDatabase call'
 
           args.path = first.name
 
-          # XXX TODO (PREVIOUS BEHAVIOR):
-          #args.dblocation = dblocations[2]
+          args.dblocation = dblocations[2]
 
         # XXX TODO (PREVIOUS BEHAVIOR) REMOVE:
         if !first.iosDatabaseLocation and !first.location and first.location isnt 0
@@ -942,19 +946,20 @@
         #if !!first.location and !!first.iosDatabaseLocation
         #  throw newSQLError 'Abiguous: both location or iosDatabaseLocation values are present in deleteDatabase call'
 
-        dblocation =
-          if !!first.location and first.location is 'default'
-            iosLocationMap['default']
-          else if !!first.iosDatabaseLocation
-            iosLocationMap[first.iosDatabaseLocation]
-          else
-            dblocations[first.location]
-
+        # FUTURE TBD:
+        #dblocation =
+        #  if !!first.location and first.location is 'default'
+        #    iosLocationMap['default']
+        #  else if !!first.iosDatabaseLocation
+        #    iosLocationMap[first.iosDatabaseLocation]
+        #  else
+        #    dblocations[first.location]
+        #
         # XXX TODO (with test):
         #if !dblocation
         #  throw newSQLError 'Valid iOS database location could not be determined in deleteDatabase call'
-
-        args.dblocation = dblocation
+        #
+        #args.dblocation = dblocation
 
         # XXX TODO BUG litehelpers/Cordova-sqlite-storage#367 (repeated here):
         # abort all pending transactions (with error callback)
