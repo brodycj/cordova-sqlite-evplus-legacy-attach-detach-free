@@ -10,12 +10,6 @@ TBD: no Circle CI or Travis CI working in this version branch.
 
 NOTE: Commercial licenses for Cordova-sqlite-enterprise-free purchased before July 2016 are valid for this version. Commercial licenses for Cordova-sqlite-evcore versions are *not* valid for this version.
 
-## BREAKING CHANGE: Database location parameter is now mandatory
-
-XXX TODO WILL BE OPTIONAL AGAIN:
-
-The `location` or `iosDatabaseLocation` *must* be specified in the `openDatabase` and `deleteDatabase` calls, as documented below.
-
 ## IMPORTANT: iCloud backup of SQLite database is NOT allowed
 
 As documented in the "**A User’s iCloud Storage Is Limited**" section of [iCloudFundamentals in Mac Developer Library iCloud Design Guide](https://developer.apple.com/library/mac/documentation/General/Conceptual/iCloudDesignGuide/Chapters/iCloudFundametals.html) (near the beginning):
@@ -46,7 +40,6 @@ As documented in the "**A User’s iCloud Storage Is Limited**" section of [iClo
 ## Status
 
 - A recent version of the Cordova CLI (such as `6.5.0`) is recommended. Cordova versions older than `6.0.0` are missing the `cordova-ios@4.0.0` security fixes. In addition it is *required* to use `cordova prepare` in case of cordova-ios older than `4.3.0` (Cordova CLI `6.4.0`).
-- XXX TODO: The iOS database location is now mandatory, as documented below.
 - Default location for iOS is `Library/LocalDatabase`, will *not* be backed up to iCloud (may **not** be changed in this version)
 - Free support is available in [litehelpers / Cordova-sqlite-evplus-legacy-attach-detach-free / issues](https://github.com/litehelpers/Cordova-sqlite-evplus-legacy-attach-detach-free/issues); premium commercial support is available by contacting: sales@litehelpers.net
 - Patches patches will *NOT* be accepted on this project due to potential licensing issues.
@@ -349,7 +342,7 @@ window.sqlitePlugin.selfTest(successCallback, errorCallback);
 
 There are two options to open a database access object:
 - **Recommended:** `var db = window.sqlitePlugin.openDatabase({name: 'my.db', location: 'default'}, successcb, errorcb);`
-- XXX TODO FIX: **Classical:** `var db = window.sqlitePlugin.openDatabase("myDatabase.db", "1.0", "Demo", -1);`
+- **Classical:** `var db = window.sqlitePlugin.openDatabase("myDatabase.db", "1.0", "Demo", -1);`
 
 The `location` option is used to specify the database subdirectory location (iOS/macOS *only*):
 - ~~`0`: `Documents` - visible to iTunes and backed up by iCloud~~ (disabled in this version)
@@ -378,8 +371,6 @@ with the `location` option set to one the following choices (affects iOS *only*)
 - ~~`0`~~ (default): `Documents` - visible to iTunes and backed up by iCloud~~ _(disabled in this version)_
 - ~~`1`: `Library` - backed up by iCloud, *NOT* visible to iTunes~~ _(disabled in this version)_
 - `2`: `Library/LocalDatabase` - *NOT* visible to iTunes and *NOT* backed up by iCloud (same as using "default")
-
-XXX TODO _not currently supported in this version branch (RECOMMENDED: see tip below to overwrite `window.openDatabase`)_: ~~`var db = window.sqlitePlugin.openDatabase("myDatabase.db", "1.0", "Demo", -1);`~~
 
 **IMPORTANT:** Please wait for the 'deviceready' event, as in the following example:
 
@@ -877,7 +868,7 @@ window.sqlitePlugin.deleteDatabase({name: 'my.db', location: 'default'}, success
 
 with `location` or `iosDatabaseLocation` parameter *required* as described above for `openDatabase` (affects iOS/macOS *only*)
 
-XXX TODO BROKEN: Alternative supported by this version:
+Alternative supported by this version:
 
 ```js
 window.sqlitePlugin.deleteDatabase(name: 'my.db', successcb, errorcb);

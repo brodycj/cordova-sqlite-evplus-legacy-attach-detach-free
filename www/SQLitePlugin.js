@@ -780,19 +780,35 @@ Contact for commercial license: info@litehelpers.net
     have to translate it back to CoffeeScript by hand.
      */
     openDatabase: argsArray(function(args) {
-      var errorcb, okcb, openargs;
+      var errorcb, first, okcb, openargs;
       if (args.length < 1 || !args[0]) {
-        throw newSQLError('Sorry missing mandatory open arguments object in openDatabase call');
+        throw newSQLError('missing mandatory open argument(s) in openDatabase call');
       }
-      if (args[0].constructor === String) {
-        throw newSQLError('Sorry first openDatabase argument must be an object');
+      first = args[0];
+      openargs = null;
+      okcb = null;
+      errorcb = null;
+      if (first.constructor === String) {
+        openargs = {
+          name: first
+        };
+        if (args.length >= 5) {
+          okcb = args[4];
+          if (args.length > 5) {
+            errorcb = args[5];
+          }
+        }
+      } else {
+        openargs = first;
+        if (args.length >= 2) {
+          okcb = args[1];
+          if (args.length > 2) {
+            errorcb = args[2];
+          }
+        }
       }
-      openargs = args[0];
       if (!openargs.name) {
         throw newSQLError('Database name value is missing in openDatabase call');
-      }
-      if (!openargs.iosDatabaseLocation && !openargs.location && openargs.location !== 0) {
-        throw newSQLError('Database location or iosDatabaseLocation value is now mandatory in openDatabase call');
       }
       if (openargs.location !== void 0 && openargs.location !== 2 && openargs.location !== 'default') {
         throw newSQLError('Incorrect or unsupported database location value in openDatabase call');
@@ -810,21 +826,14 @@ Contact for commercial license: info@litehelpers.net
       if (!!openargs.androidLockWorkaround && openargs.androidLockWorkaround === 1) {
         openargs.androidBugWorkaround = 1;
       }
-      okcb = null;
-      errorcb = null;
-      if (args.length >= 2) {
-        okcb = args[1];
-        if (args.length > 2) {
-          errorcb = args[2];
-        }
-      }
       return new SQLitePlugin(openargs, okcb, errorcb);
     }),
     deleteDatabase: function(first, success, error) {
       var args, dbname;
       args = {};
       if (first.constructor === String) {
-        throw newSQLError('Sorry first deleteDatabase argument must be an object');
+        args.path = first;
+        args.dblocation = dblocations[2];
       } else {
         if (!(first && first['name'])) {
           throw new Error("Please specify db name");
@@ -841,9 +850,6 @@ Contact for commercial license: info@litehelpers.net
         }
         args.path = first.name;
         args.dblocation = dblocations[2];
-      }
-      if (!first.iosDatabaseLocation && !first.location && first.location !== 0) {
-        throw newSQLError('Database location or iosDatabaseLocation value is now mandatory in deleteDatabase call');
       }
       delete SQLitePlugin.prototype.openDBs[args.path];
       delete SQLitePlugin.prototype.a1map[args.path];

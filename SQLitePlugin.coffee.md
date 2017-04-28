@@ -812,46 +812,34 @@
       have to translate it back to CoffeeScript by hand.
       ###
       openDatabase: argsArray (args) ->
-        # XXX TODO (PREVIOUS BEHAVIOR GENERAL): SUPPORT usage with
-        # no database location setting
+        #console.log 'open args: ' + JSON.stringify args
 
-        # XXX TODO (PREVIOUS BEHAVIOR):
-        #if args.length < 1 then return null
-
+        # XXX TODO NEEDS TEST:
         if args.length < 1 || !args[0]
-          throw newSQLError 'Sorry missing mandatory open arguments object in openDatabase call'
+          throw newSQLError 'missing mandatory open argument(s) in openDatabase call'
 
-        # XXX TODO (PREVIOUS BEHAVIOR):
-        #first = args[0]
-        #openargs = null
-        #okcb = null
-        #errorcb = null
-        #
-        #if first.constructor == String
-        #  openargs = {name: first}
-        #
-        #  if args.length >= 5
-        #    okcb = args[4]
-        #    if args.length > 5 then errorcb = args[5]
-        #
-        #else
-        #  openargs = first
-        #
-        #  if args.length >= 2
-        #    okcb = args[1]
-        #    if args.length > 2 then errorcb = args[2]
+        first = args[0]
+        openargs = null
+        okcb = null
+        errorcb = null
 
-        if args[0].constructor == String
-          throw newSQLError 'Sorry first openDatabase argument must be an object'
+        if first.constructor == String
+          openargs = {name: first}
 
-        openargs = args[0]
+          if args.length >= 5
+            okcb = args[4]
+            if args.length > 5 then errorcb = args[5]
+
+        else
+          openargs = first
+
+          if args.length >= 2
+            okcb = args[1]
+            if args.length > 2 then errorcb = args[2]
 
         # check here
         if !openargs.name
           throw newSQLError 'Database name value is missing in openDatabase call'
-
-        if !openargs.iosDatabaseLocation and !openargs.location and openargs.location isnt 0
-          throw newSQLError 'Database location or iosDatabaseLocation value is now mandatory in openDatabase call'
 
         # enforce default database location:
         if openargs.location isnt undefined and openargs.location isnt 2 and openargs.location isnt 'default'
@@ -888,18 +876,9 @@
         if !!openargs.androidLockWorkaround and openargs.androidLockWorkaround == 1
           openargs.androidBugWorkaround = 1
 
-        okcb = null
-        errorcb = null
-        if args.length >= 2
-          okcb = args[1]
-          if args.length > 2 then errorcb = args[2]
-
         new SQLitePlugin openargs, okcb, errorcb
 
       deleteDatabase: (first, success, error) ->
-        # XXX TODO (PREVIOUS BEHAVIOR GENERAL): SUPPORT usage with
-        # no database location setting
-
         # XXX TODO BUG litehelpers/Cordova-sqlite-storage#367:
         # abort all pending transactions (with error callback)
         # when deleting a database
@@ -911,10 +890,8 @@
         if first.constructor == String
           #console.log "delete db name: #{first}"
 
-          # XXX TODO (PREVIOUS BEHAVIOR):
-          #args.path = first
-          #args.dblocation = dblocations[2]
-          throw newSQLError 'Sorry first deleteDatabase argument must be an object'
+          args.path = first
+          args.dblocation = dblocations[2]
 
         else
           #console.log "delete db args: #{JSON.stringify first}"
@@ -925,22 +902,14 @@
           if typeof dbname != 'string'
             throw newSQLError 'delete database name must be a string'
 
-          # XXX TODO (PREVIOUS BEHAVIOR):
-          #args.path = dbname
-
-          # enforce default database location:
+          # enforce default database location here:
           if first.location isnt undefined and first.location isnt 2 and first.location isnt 'default'
             throw newSQLError 'Incorrect or unsupported database location value in deleteDatabase call'
           if first.iosDatabaseLocation isnt undefined and first.iosDatabaseLocation isnt 'default'
             throw newSQLError 'Incorrect or unsupported iosDatabaseLocation value in deleteDatabase call'
 
           args.path = first.name
-
           args.dblocation = dblocations[2]
-
-        # XXX TODO (PREVIOUS BEHAVIOR) REMOVE:
-        if !first.iosDatabaseLocation and !first.location and first.location isnt 0
-          throw newSQLError 'Database location or iosDatabaseLocation value is now mandatory in deleteDatabase call'
 
         # XXX TODO (with test):
         #if !!first.location and !!first.iosDatabaseLocation

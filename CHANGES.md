@@ -1,11 +1,9 @@
 # Changes
 
-## cordova-sqlite-evplus-legacy-attach-detach-free 0.8.3-pre4b
+## cordova-sqlite-evplus-legacy-attach-detach-free 0.8.3-pre5
 
 - Support macOS ("osx") platform in this version branch
 - Drop engines constraint from plugin.xml in this version branch
-
-XXX TODO: location setting is now mandatory, will be optional again.
 
 ###### cordova-sqlite-legacy-express-core 1.0.0
 

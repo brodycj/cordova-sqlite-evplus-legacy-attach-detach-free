@@ -51,21 +51,6 @@ var mytests = function() {
 
     var suiteName = 'plugin: ';
 
-        it('Open plugin database with Web SQL parameters - REJECTED with exception', function(done) {
-          try {
-            // EXPECTED to throw:
-            var db = window.sqlitePlugin.openDatabase('open-with-web-sql-parameters-test.db', '1.0', 'test', DEFAULT_SIZE);
-
-            // NOT EXPECTED to get here:
-            expect(false).toBe(true);
-            done();
-          } catch (e) {
-            // EXPECTED RESULT:
-            expect(e).toBeDefined();
-            done();
-          }
-        }, MYTIMEOUT);
-
         // NOTE: this was an issue due to a past inconsistency between the
         // ngCordova documentation and source code which triggered problems
         // reported in litehelpers/Cordova-sqlite-storage#246 and
@@ -91,7 +76,6 @@ var mytests = function() {
           }
         }, MYTIMEOUT);
 
-        /* ** XXX TODO (PREVIOUS BEHAVIOR):
         it(suiteName + 'Open plugin database with Web SQL parameters (SUPPORTED by this version)', function(done) {
           try {
             var db = window.sqlitePlugin.openDatabase('open-with-web-sql-parameters-test.db', "1.0", "Demo", DEFAULT_SIZE);
@@ -196,7 +180,6 @@ var mytests = function() {
             done();
           }
         }, MYTIMEOUT);
-        // ** */
 
         it(suiteName + 'Open with location: 3 (REJECTED with exception)', function(done) {
           try {
@@ -399,7 +382,6 @@ var mytests = function() {
           }
         }, MYTIMEOUT);
 
-        /* ** XXX TODO (PREVIOUS BEHAVIOR):
         it(suiteName + 'sqlitePlugin.deleteDatabase with no location setting (SUPPORTED by this version)', function(done) {
           try {
             // FUTURE TBD test without callbacks?
@@ -488,7 +470,6 @@ var mytests = function() {
             done();
           }
         }, MYTIMEOUT);
-        // ** */
 
         it(suiteName + 'sqlitePlugin.deleteDatabase with location: -1 (REJECTED with exception)', function(done) {
           try {
@@ -639,14 +620,12 @@ var mytests = function() {
 
         // NOTE: MUST be defined in function scope, NOT outer scope:
         var openDatabase = function(first, second, third, fourth, fifth, sixth) {
-          /* ** XXX TODO (PREVIOUS BEHAVIOR):
           if (!isImpl2) {
             // openDatabase with string parameter,
             // no database location setting SUPPORTED
             // in this verison branch:
             return window.sqlitePlugin.openDatabase(first, second, third, fourth, fifth, sixth);
           }
-          // ** */
 
           var dbname, okcb, errorcb;
 
@@ -660,17 +639,10 @@ var mytests = function() {
             errorcb = third;
           }
 
-          if (!isImpl2) {
-            // XXX TODO:
-            // database location setting needed in this version branch:
-            return window.sqlitePlugin.openDatabase({name: dbname, iosDatabaseLocation: 'default'}, okcb, errorcb);
-          }
-
           var dbopts = {
             name: 'i2-'+dbname,
-            // database location setting needed in this version branch:
-            //location: 1, // (value ignored on Android)
-            location: 2, // (value ignored on Android)
+            // TEST with no database location setting
+            // (SUPPORTED in this version branch)
             androidDatabaseImplementation: 2,
             androidLockWorkaround: 1
           };
@@ -679,22 +651,16 @@ var mytests = function() {
         }
 
         var deleteDatabase = function(first, second, third) {
-          // XXX TODO (PREVIOUS BEHAVIOR):
           // sqlitePlugin.deleteDatabase with string parameter,
           // no database location setting SUPPORTED
           // in this verison branch:
           if (!isImpl2) {
-            /* ** XXX TODO (PREVIOUS BEHAVIOR):
             window.sqlitePlugin.deleteDatabase(first, second, third);
-            // ** */
-            window.sqlitePlugin.deleteDatabase({name: first, iosDatabaseLocation: 'default'}, second, third);
           } else {
             window.sqlitePlugin.deleteDatabase({
               name: 'i2-'+first,
-              // XXX TODO:
-              // database location setting needed in this version branch:
-              //location: 1 // (value ignored on Android)
-              location: 2 // (value ignored on Android)
+              // TEST with no database location setting
+              // (SUPPORTED in this version branch)
             }, second, third);
           }
         }
@@ -780,14 +746,12 @@ var mytests = function() {
 
         // NOTE: MUST be defined in function scope, NOT outer scope:
         var openDatabase = function(first, second, third, fourth, fifth, sixth) {
-          /* ** XXX TODO (PREVIOUS BEHAVIOR):
           if (!isImpl2) {
             // openDatabase with string parameter,
             // no database location setting SUPPORTED
             // in this verison branch:
             return window.sqlitePlugin.openDatabase(first, second, third, fourth, fifth, sixth);
           }
-          // ** */
 
           var dbname, okcb, errorcb;
 
@@ -801,17 +765,10 @@ var mytests = function() {
             errorcb = third;
           }
 
-          if (!isImpl2) {
-            // XXX TODO:
-            // database location setting needed in this version branch:
-            return window.sqlitePlugin.openDatabase({name: dbname, location: 2}, okcb, errorcb);
-          }
-
           var dbopts = {
             name: 'i2-'+dbname,
-            // database location setting needed in this version branch:
-            //location: 1, // (value ignored on Android)
-            location: 2, // (value ignored on Android)
+            // TEST with no database location setting
+            // (SUPPORTED in this version branch)
             androidDatabaseImplementation: 2,
             androidLockWorkaround: 1
           };
@@ -968,10 +925,7 @@ var mytests = function() {
         it(suiteName + ' REPRODUCE BUG: close DB in db.executeSql() callback', function (done) {
           var dbName = "Close-DB-in-db-executeSql-callback.db";
 
-          /* ** XXX TODO (PREVIOUS BEHAVIOR):
           openDatabase({name: dbName}, function (db) {
-          // ** )} ** */
-          openDatabase({name: dbName, location: 'default'}, function (db) {
             db.executeSql("CREATE TABLE IF NOT EXISTS tt (test_data)", [], function() {
               db.close(function () {
                 // FUTURE TBD EXPECTED RESULT:
@@ -1020,8 +974,9 @@ var mytests = function() {
           stop(2);
 
           var dbName = 'test-open-twice-in-same-location.db';
-          //var dbargs = {name: dbName, location: 1};
-          var dbargs = {name: dbName, location: 'default'};
+
+          // TEST with no location value (SUPPORTED in this version branch)
+          var dbargs = {name: dbName};
 
           var db1 = openDatabase(dbargs, function () {
             var db2 = openDatabase(dbargs, function () {
@@ -1059,8 +1014,9 @@ var mytests = function() {
           stop(1);
 
           var dbName = 'test-database-close-and-reopen.db';
-          //var dbargs = {name: dbName, location: 0};
-          var dbargs = {name: dbName, location: 'default'};
+
+          // TEST with no location value (SUPPORTED in this version branch)
+          var dbargs = {name: dbName};
 
           openDatabase(dbargs, function (db) {
             db.close(function () {
@@ -1191,8 +1147,9 @@ var mytests = function() {
 
         test_it(suiteName + ' close (after open cb), then delete & re-open allows subsequent queries to run', function () {
           var dbName = 'test-close-after-opencb-then-delete-and-reopen.db';
-          //var dbargs = {name: dbName, iosDatabaseLocation: 'Library'};
-          var dbargs = {name: dbName, location: 'default'};
+
+          // TEST with no location value (SUPPORTED in this version branch)
+          var dbargs = {name: dbName};
 
           // asynch test coming up
           stop(1);
@@ -1236,12 +1193,9 @@ var mytests = function() {
 
         test_it(suiteName + ' repeatedly open and close database (4x)', function () {
           var dbName = 'test-repeatedly-open-and-close-db-4x.db';
-          //* ** XXX TODO (PREVIOUS BEHAVIOR):
+
           // TEST with no database location setting (SUPPORTED in this version branch)
-          //var dbargs = {name: dbName};
-          // ** */
-          //var dbargs = {name: dbName, location: 0};
-          var dbargs = {name: dbName, location: 'default'};
+          var dbargs = {name: dbName};
 
           // async test coming up
           stop(1);
@@ -1362,12 +1316,9 @@ var mytests = function() {
         // Needed to support some large-scale applications:
         test_it(suiteName + ' repeatedly open and delete database (4x)', function () {
           var dbName = 'test-repeatedly-open-and-delete-4x.db';
-          /* ** XXX TODO (PREVIOUS BEHAVIOR):
+
           // TEST with no location value (SUPPORTED in this version branch)
           var dbargs = {name: dbName};
-          // ** */
-          //var dbargs = {name: dbName, iosDatabaseLocation: 'Documents'};
-          var dbargs = {name: dbName, location: 'default'};
 
           // async test coming up
           stop(1);
