@@ -12,19 +12,19 @@ var isWindows = /Windows /.test(navigator.userAgent); // Windows (8.1)
 // the default Android implementation and implementation #2,
 // this test script will also apply the androidLockWorkaround: 1 option
 // in case of implementation #2.
-var scenarioList = [
+var pluginScenarioList = [
   isAndroid ? 'Plugin-implementation-default' : 'Plugin',
   'Plugin-implementation-2'
 ];
 
-var scenarioCount = isAndroid ? 2 : 1;
+var pluginScenarioCount = isAndroid ? 2 : 1;
 
 var mytests = function() {
 
-  for (var i=0; i<scenarioCount; ++i) {
+  for (var i=0; i<pluginScenarioCount; ++i) {
 
-    describe(scenarioList[i] + ': BATCH SQL test(s)', function() {
-      var scenarioName = scenarioList[i];
+    describe(pluginScenarioList[i] + ': BATCH SQL test(s)', function() {
+      var scenarioName = pluginScenarioList[i];
       var suiteName = scenarioName + ': ';
       var isImpl2 = (i === 1);
 
@@ -34,15 +34,18 @@ var mytests = function() {
           return window.sqlitePlugin.openDatabase({
             // prevent reuse of database from default db implementation:
             name: 'i2-'+name,
+            // explicit database location:
+            location: 'default',
             androidDatabaseImplementation: 2,
             androidLockWorkaround: 1
           });
         } else {
-          return window.sqlitePlugin.openDatabase(name, '1.0', 'Test', DEFAULT_SIZE);
+          // explicit database location:
+          return window.sqlitePlugin.openDatabase({name: name, location: 'default'});
         }
       }
 
-      describe(scenarioList[i] + ': Basic sql batch test(s)', function() {
+      describe(pluginScenarioList[i] + ': Basic sql batch test(s)', function() {
 
         it(suiteName + 'Single-column batch sql test', function(done) {
           var db = openDatabase('Single-column-batch-sql-test.db', '1.0', 'Test', DEFAULT_SIZE);

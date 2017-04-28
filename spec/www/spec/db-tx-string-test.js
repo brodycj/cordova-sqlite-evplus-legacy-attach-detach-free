@@ -40,6 +40,8 @@ var mytests = function() {
           return window.sqlitePlugin.openDatabase({
             // prevent reuse of database from default db implementation:
             name: 'i2-'+name,
+            // explicit database location:
+            location: 'default',
             androidDatabaseImplementation: 2,
             androidLockWorkaround: 1
           });
@@ -47,7 +49,8 @@ var mytests = function() {
         if (isWebSql) {
           return window.openDatabase(name, '1.0', 'Test', DEFAULT_SIZE);
         } else {
-          return window.sqlitePlugin.openDatabase(name, '1.0', 'Test', DEFAULT_SIZE);
+          // explicit database location:
+          return window.sqlitePlugin.openDatabase({name: name, location: 'default'});
         }
       }
 
@@ -73,8 +76,8 @@ var mytests = function() {
         });
 
         it(suiteName + ' string encoding test with UNICODE \\u0000', function (done) {
-          if (isWindows) pending('BROKEN for Windows'); // XXX
-          if (isWP8) pending('BROKEN for WP(8)'); // [BUG #202] UNICODE characters not working with WP(8)
+          if (isWP8) pending('BROKEN on WP(8)'); // [BUG #202] UNICODE characters not working with WP(8)
+          if (isWindows) pending('BROKEN on Windows'); // TBD (truncates on Windows)
           if (!isWebSql && !isWindows && isAndroid && !isImpl2) pending('BROKEN on Android-sqlite-connector implementation)');
 
           var dbName = "Unicode-hex-test";
@@ -147,6 +150,8 @@ var mytests = function() {
         });
 
         it(suiteName + "String vertical tab test", function(done) {
+          if (isWP8) pending('BROKEN on WP(8)'); // [BUG #202] UNICODE characters not working with WP(8)
+
           var db = openDatabase("String-vertical-tab-test.db", "1.0", "Demo", DEFAULT_SIZE);
           expect(db).toBeDefined();
 
@@ -161,6 +166,8 @@ var mytests = function() {
         });
 
         it(suiteName + "String form feed test", function(done) {
+          if (isWP8) pending('BROKEN on WP(8)'); // [BUG #202] UNICODE characters not working with WP(8)
+
           var db = openDatabase("String-form-feed-test.db", "1.0", "Demo", DEFAULT_SIZE);
           expect(db).toBeDefined();
 
@@ -175,6 +182,8 @@ var mytests = function() {
         });
 
         it(suiteName + "String backspace test", function(done) {
+          if (isWP8) pending('BROKEN on WP(8)'); // [BUG #202] UNICODE characters not working with WP(8)
+
           var db = openDatabase("String-backspace-test.db", "1.0", "Demo", DEFAULT_SIZE);
           expect(db).toBeDefined();
 
@@ -195,7 +204,7 @@ var mytests = function() {
         // - litehelpers/Cordova-sqlite-storage#147
         // - cordova/cordova-discuss#57 (issue with cordova-android)
         it(suiteName + "UNICODE \\u2028 line separator string length", function(done) {
-          if (isWP8) pending('BROKEN for WP(8)'); // [BUG #202] Certain UNICODE characters not working with WP(8)
+          if (isWP8) pending('BROKEN on WP(8)'); // [BUG #202] Certain UNICODE characters not working with WP(8)
 
           // NOTE: this test verifies that the UNICODE line separator (\u2028)
           // is seen by the sqlite implementation OK:
@@ -215,7 +224,7 @@ var mytests = function() {
         });
 
         it(suiteName + ' handles UNICODE \\u2028 line separator correctly [string test]', function (done) {
-          if (isWP8) pending('BROKEN for WP(8)'); // [BUG #202] UNICODE characters not working with WP(8)
+          if (isWP8) pending('BROKEN on WP(8)'); // [BUG #202] UNICODE characters not working with WP(8)
           if (!isWebSql && !isWindows && isAndroid) pending('SKIP for Android plugin (cordova-android 6.x BUG: cordova/cordova-discuss#57)');
 
           // NOTE: since the above test shows the UNICODE line separator (\u2028)
@@ -245,7 +254,7 @@ var mytests = function() {
         // - litehelpers/Cordova-sqlite-storage#147
         // - cordova/cordova-discuss#57 (issue with cordova-android)
         it(suiteName + "UNICODE \\u2029 line separator string length", function(done) {
-          if (isWP8) pending('BROKEN for WP(8)'); // [BUG #202] Certain UNICODE characters not working with WP(8)
+          if (isWP8) pending('BROKEN on WP(8)'); // [BUG #202] Certain UNICODE characters not working with WP(8)
 
           // NOTE: this test verifies that the UNICODE paragraph separator (\u2029)
           // is seen by the sqlite implementation OK:
@@ -266,7 +275,7 @@ var mytests = function() {
         });
 
         it(suiteName + ' handles UNICODE \\u2029 line separator correctly [string test]', function (done) {
-          if (isWP8) pending('BROKEN for WP(8)'); // [BUG #202] UNICODE characters not working with WP(8)
+          if (isWP8) pending('BROKEN on WP(8)'); // [BUG #202] UNICODE characters not working with WP(8)
           if (!isWebSql && !isWindows && isAndroid) pending('SKIP for Android plugin (cordova-android 6.x BUG: cordova/cordova-discuss#57)');
 
           // NOTE: since the above test shows the UNICODE paragraph separator (\u2029)

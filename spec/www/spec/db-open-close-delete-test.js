@@ -31,9 +31,8 @@ function start(n) {
 }
 
 var isWP8 = /IEMobile/.test(navigator.userAgent); // Matches WP(7/8/8.1)
-var isWindows = /Windows /.test(navigator.userAgent); // Windows (8.1)
+var isWindows = /Windows /.test(navigator.userAgent);
 var isAndroid = !isWindows && /Android/.test(navigator.userAgent);
-var isIE = isWindows || isWP8;
 
 // NOTE: While in certain version branches there is no difference between
 // the default Android implementation and implementation #2,
@@ -48,10 +47,51 @@ var pluginScenarioCount = isAndroid ? 2 : 1;
 
 var mytests = function() {
 
-  describe('Plugin - More BASIC sqlitePlugin.openDatabase parameter check test(s)', function() {
+  describe('Basic sqlitePlugin.openDatabase parameter test(s)', function() {
 
     var suiteName = 'plugin: ';
 
+        it('Open plugin database with Web SQL parameters - REJECTED with exception', function(done) {
+          try {
+            // EXPECTED to throw:
+            var db = window.sqlitePlugin.openDatabase('open-with-web-sql-parameters-test.db', '1.0', 'test', DEFAULT_SIZE);
+
+            // NOT EXPECTED to get here:
+            expect(false).toBe(true);
+            done();
+          } catch (e) {
+            // EXPECTED RESULT:
+            expect(e).toBeDefined();
+            done();
+          }
+        }, MYTIMEOUT);
+
+        // NOTE: this was an issue due to a past inconsistency between the
+        // ngCordova documentation and source code which triggered problems
+        // reported in litehelpers/Cordova-sqlite-storage#246 and
+        // litehelpers/Cordova-sqlcipher-adapter#5.
+        // The implementation now avoids this problem *by throwing an exception*.
+        // Brody TBD: check how the Web SQL API would handle this condition?
+        it(suiteName + 'check that db name is really a string', function(done) {
+          var p1 = { name: 'my.db.name', location: 'default' };
+          try {
+            window.sqlitePlugin.openDatabase({ name: p1, location: 'default' }, function(db) {
+              // NOT EXPECTED:
+              expect(false).toBe(true);
+              done();
+            }, function(error) {
+              // OK but NOT EXPECTED:
+              expect('Behavior changed, please update this test').toBe('--');
+              done();
+            });
+          } catch (e) {
+            // EXPECTED RESULT - stopped by the implementation:
+            expect(e).toBeDefined();
+            done();
+          }
+        }, MYTIMEOUT);
+
+        /* ** XXX TODO (PREVIOUS BEHAVIOR):
         it(suiteName + 'Open plugin database with Web SQL parameters (SUPPORTED by this version)', function(done) {
           try {
             var db = window.sqlitePlugin.openDatabase('open-with-web-sql-parameters-test.db', "1.0", "Demo", DEFAULT_SIZE);
@@ -156,6 +196,7 @@ var mytests = function() {
             done();
           }
         }, MYTIMEOUT);
+        // ** */
 
         it(suiteName + 'Open with location: 3 (REJECTED with exception)', function(done) {
           try {
@@ -178,7 +219,6 @@ var mytests = function() {
             done();
           }
         }, MYTIMEOUT);
-
 
         it(suiteName + "Open with location: 'bogus' (REJECTED with exception)", function(done) {
           try {
@@ -259,6 +299,7 @@ var mytests = function() {
           }
         }, MYTIMEOUT);
 
+        /* ** XXX TODO (PREVIOUS BEHAVIOR):
         it(suiteName + 'sqlitePlugin.deleteDatabase with no location setting (SUPPORTED by this version)', function(done) {
           try {
             // FUTURE TBD test without callbacks?
@@ -347,6 +388,7 @@ var mytests = function() {
             done();
           }
         }, MYTIMEOUT);
+        // ** */
 
         it(suiteName + 'sqlitePlugin.deleteDatabase with location: -1 (REJECTED with exception)', function(done) {
           try {
@@ -415,6 +457,10 @@ var mytests = function() {
 
     });
 
+  });
+
+  describe('Plugin: db open-close-delete test(s)', function() {
+
     for (var i=0; i<pluginScenarioCount; ++i) {
 
       describe(pluginScenarioList[i] + ': basic sqlitePlugin.deleteDatabase test(s)', function() {
@@ -424,12 +470,14 @@ var mytests = function() {
 
         // NOTE: MUST be defined in function scope, NOT outer scope:
         var openDatabase = function(first, second, third, fourth, fifth, sixth) {
+          /* ** XXX TODO (PREVIOUS BEHAVIOR):
           if (!isImpl2) {
             // openDatabase with string parameter,
             // no database location setting SUPPORTED
             // in this verison branch:
             return window.sqlitePlugin.openDatabase(first, second, third, fourth, fifth, sixth);
           }
+          // ** */
 
           var dbname, okcb, errorcb;
 
@@ -443,8 +491,17 @@ var mytests = function() {
             errorcb = third;
           }
 
+          if (!isImpl2) {
+            // XXX TODO:
+            // database location setting needed in this version branch:
+            return window.sqlitePlugin.openDatabase({name: dbname, iosDatabaseLocation: 'default'}, okcb, errorcb);
+          }
+
           var dbopts = {
             name: 'i2-'+dbname,
+            // database location setting needed in this version branch:
+            //location: 1, // (value ignored on Android)
+            location: 2, // (value ignored on Android)
             androidDatabaseImplementation: 2,
             androidLockWorkaround: 1
           };
@@ -453,13 +510,23 @@ var mytests = function() {
         }
 
         var deleteDatabase = function(first, second, third) {
+          // XXX TODO (PREVIOUS BEHAVIOR):
           // sqlitePlugin.deleteDatabase with string parameter,
           // no database location setting SUPPORTED
           // in this verison branch:
           if (!isImpl2) {
+            /* ** XXX TODO (PREVIOUS BEHAVIOR):
             window.sqlitePlugin.deleteDatabase(first, second, third);
+            // ** */
+            window.sqlitePlugin.deleteDatabase({name: first, iosDatabaseLocation: 'default'}, second, third);
           } else {
-            window.sqlitePlugin.deleteDatabase('i2-'+first, second, third);
+            window.sqlitePlugin.deleteDatabase({
+              name: 'i2-'+first,
+              // XXX TODO:
+              // database location setting needed in this version branch:
+              //location: 1 // (value ignored on Android)
+              location: 2 // (value ignored on Android)
+            }, second, third);
           }
         }
 
@@ -544,12 +611,14 @@ var mytests = function() {
 
         // NOTE: MUST be defined in function scope, NOT outer scope:
         var openDatabase = function(first, second, third, fourth, fifth, sixth) {
+          /* ** XXX TODO (PREVIOUS BEHAVIOR):
           if (!isImpl2) {
             // openDatabase with string parameter,
             // no database location setting SUPPORTED
             // in this verison branch:
             return window.sqlitePlugin.openDatabase(first, second, third, fourth, fifth, sixth);
           }
+          // ** */
 
           var dbname, okcb, errorcb;
 
@@ -563,8 +632,17 @@ var mytests = function() {
             errorcb = third;
           }
 
+          if (!isImpl2) {
+            // XXX TODO:
+            // database location setting needed in this version branch:
+            return window.sqlitePlugin.openDatabase({name: dbname, location: 2}, okcb, errorcb);
+          }
+
           var dbopts = {
             name: 'i2-'+dbname,
+            // database location setting needed in this version branch:
+            //location: 1, // (value ignored on Android)
+            location: 2, // (value ignored on Android)
             androidDatabaseImplementation: 2,
             androidLockWorkaround: 1
           };
@@ -587,8 +665,8 @@ var mytests = function() {
         });
 
         test_it(suiteName + ' database.close (immediately after open) calls its success callback', function () {
-          // XXX POSSIBLY BROKEN on iOS due to current background processing implementation
-          if (!(isAndroid || isIE)) pending('POSSIBLY BROKEN on iOS (background processing implementation)');
+          // TBD POSSIBLY BROKEN on iOS/macOS due to current background processing implementation:
+          if (!isAndroid && !isWindows && !isWP8) pending('POSSIBLY BROKEN on iOS/macOS (background processing implementation)');
 
           // asynch test coming up
           stop(1);
@@ -629,9 +707,9 @@ var mytests = function() {
 
         test_it(suiteName + ' database.close fails in transaction', function () {
           stop(2);
+          var dbName = "Database-Close-fail.db";
 
-          var dbName = "Database-Close-fail";
-          var db = openDatabase({name: dbName, location: 2});
+          var db = openDatabase({name: dbName, location: 'default'});
 
           db.readTransaction(function(tx) {
             tx.executeSql('SELECT 1', [], function(tx, results) {
@@ -655,11 +733,11 @@ var mytests = function() {
         });
 
         test_it(suiteName + ' attempt to close db twice', function () {
-          var dbName = "close-db-twice.db";
+          var dbName = 'close-db-twice.db';
 
           stop(1);
 
-          openDatabase({name: dbName}, function(db) {
+          openDatabase({name: dbName, location: 'default'}, function(db) {
             ok(!!db, 'valid db object');
             db.close(function () {
               ok(true, 'db.close() success callback (first time)');
@@ -721,7 +799,10 @@ var mytests = function() {
         it(suiteName + ' REPRODUCE BUG: close DB in db.executeSql() callback', function (done) {
           var dbName = "Close-DB-in-db-executeSql-callback.db";
 
+          /* ** XXX TODO (PREVIOUS BEHAVIOR):
           openDatabase({name: dbName}, function (db) {
+          // ** )} ** */
+          openDatabase({name: dbName, location: 'default'}, function (db) {
             db.executeSql("CREATE TABLE IF NOT EXISTS tt (test_data)", [], function() {
               db.close(function () {
                 // FUTURE TBD EXPECTED RESULT:
@@ -752,8 +833,12 @@ var mytests = function() {
       var suiteName = scenarioName + ': ';
 
         // NOTE: MUST be defined in function scope, NOT outer scope:
-        var openDatabase = function(first, second, third, fourth, fifth, sixth) {
-          return window.sqlitePlugin.openDatabase(first, second, third, fourth, fifth, sixth);
+        var openDatabase = function(first, second, third) {
+          return window.sqlitePlugin.openDatabase(first, second, third);
+        }
+
+        var deleteDatabase = function(first, second, third) {
+          window.sqlitePlugin.deleteDatabase(first, second, third);
         }
 
         var deleteDatabase = function(first, second, third) {
@@ -763,12 +848,14 @@ var mytests = function() {
         // Needed to support some large-scale applications:
         test_it(suiteName + ' open same database twice in [same] specified location works', function () {
           // XXX TODO [BROKEN]: same db name, different location should be different db!
-          var dbName = 'open-twice-same-location.db';
-
           stop(2);
 
-          var db1 = openDatabase({name: dbName, location: 2}, function () {
-            var db2 = openDatabase({name: dbName, location: 2}, function () {
+          var dbName = 'test-open-twice-in-same-location.db';
+          //var dbargs = {name: dbName, location: 1};
+          var dbargs = {name: dbName, location: 'default'};
+
+          var db1 = openDatabase(dbargs, function () {
+            var db2 = openDatabase(dbargs, function () {
               db1.readTransaction(function(tx1) {
                 tx1.executeSql('SELECT 1', [], function(tx1d, results) {
                   ok(true, 'db1 transaction working');
@@ -801,14 +888,16 @@ var mytests = function() {
         test_it(suiteName + ' close then re-open (2x) allows subsequent queries to run', function () {
           // asynch test coming up
           stop(1);
-        
-          var dbName = "Database-Close-and-Reopen";
 
-          openDatabase(dbName, "1.0", "Demo", DEFAULT_SIZE, function (db) {
+          var dbName = 'test-database-close-and-reopen.db';
+          //var dbargs = {name: dbName, location: 0};
+          var dbargs = {name: dbName, location: 'default'};
+
+          openDatabase(dbargs, function (db) {
             db.close(function () {
-              openDatabase(dbName, "1.0", "Demo", DEFAULT_SIZE, function (db) {
+              openDatabase(dbargs, function (db) {
                 db.close(function () {
-                  openDatabase(dbName, "1.0", "Demo", DEFAULT_SIZE, function (db) {
+                  openDatabase(dbargs, function (db) {
                     db.readTransaction(function (tx) {
                       tx.executeSql('SELECT 1', [], function (tx, results) {
                         ok(true, 'database re-opened succesfully');
@@ -823,7 +912,7 @@ var mytests = function() {
                     }, function(tx) {
                       // close on transaction success not while executing
                       // or commit will fail
-                      db.close(); 
+                      db.close();
                     });
                   }, function (error) {
                     ok(false, error.message);
@@ -891,20 +980,20 @@ var mytests = function() {
         // XXX SEE BELOW: repeat scenario but wait for open callback before close/delete/reopen
         // Needed to support some large-scale applications:
         test_it(suiteName + ' immediate close, then delete & re-open allows subsequent queries to run', function () {
-
-          // XXX POSSIBLY BROKEN on iOS due to current background processing implementation
-          if (!(isAndroid || isIE)) pending('POSSIBLY BROKEN on iOS (background processing implementation)');
+          // TBD POSSIBLY BROKEN on iOS/macOS due to current background processing implementation:
+          if (!isAndroid && !isWindows && !isWP8) pending('POSSIBLY BROKEN on iOS/macOS (background processing implementation)');
 
           var dbName = "Immediate-close-delete-Reopen.db";
+          var dbargs = {name: dbName, location: 'default'};
 
           // asynch test coming up
           stop(1);
 
-          var db1 = openDatabase({name: dbName});
+          var db1 = openDatabase(dbargs);
 
           db1.close(function () {
-            deleteDatabase(dbName, function () {
-              openDatabase({name: dbName}, function(db) {
+            deleteDatabase(dbargs, function () {
+              openDatabase(dbargs, function(db) {
                 db.readTransaction(function (tx) {
                   tx.executeSql('SELECT 1', [], function (tx, results) {
                     ok(true, 'database re-opened succesfully');
@@ -931,7 +1020,7 @@ var mytests = function() {
           });
         });
 
-        test_it(suiteName + ' close (after open cb), then delete then re-open allows subsequent queries to run', function () {
+        test_it(suiteName + ' close (after open cb), then delete & re-open allows subsequent queries to run', function () {
           var dbName = 'test-close-after-opencb-then-delete-and-reopen.db';
           var dbargs = {name: dbName, iosDatabaseLocation: 'Library'};
 
@@ -977,8 +1066,12 @@ var mytests = function() {
 
         test_it(suiteName + ' repeatedly open and close database (4x)', function () {
           var dbName = 'test-repeatedly-open-and-close-db-4x.db';
+          //* ** XXX TODO (PREVIOUS BEHAVIOR):
           // TEST with no database location setting (SUPPORTED in this version branch)
-          var dbargs = {name: dbName};
+          //var dbargs = {name: dbName};
+          // ** */
+          //var dbargs = {name: dbName, location: 0};
+          var dbargs = {name: dbName, location: 'default'};
 
           // async test coming up
           stop(1);
@@ -1039,35 +1132,36 @@ var mytests = function() {
         });
 
         test_it(suiteName + ' repeatedly open and close database faster (5x)', function () {
-          // XXX CURRENTLY BROKEN on iOS due to current background processing implementation
-          if (!(isAndroid || isIE)) pending('CURRENTLY BROKEN on iOS (background processing implementation)');
+          // TBD CURRENTLY BROKEN on iOS/macOS due to current background processing implementation:
+          if (!isAndroid && !isWindows && !isWP8) pending('CURRENTLY BROKEN on iOS/macOS (background processing implementation)');
 
-          var dbName = "repeatedly-open-and-close-faster-5x.db";
+          var dbName = 'repeatedly-open-and-close-faster-5x.db';
+          var dbargs = {name: dbName, location: 'default'};
 
           // async test coming up
           stop(1);
 
-          var db = openDatabase({name: dbName});
+          var db = openDatabase(dbargs);
           ok(!!db, 'valid db object 1/5');
           db.close(function () {
             ok(true, 'success 1/5');
 
-            db = openDatabase({name: dbName});
+            db = openDatabase(dbargs);
             ok(!!db, 'valid db object 2/5');
             db.close(function () {
               ok(true, 'success 2/5');
 
-              db = openDatabase({name: dbName});
+              db = openDatabase(dbargs);
               ok(!!db, 'valid db object 3/5');
               db.close(function () {
                 ok(true, 'success 3/5');
 
-                db = openDatabase({name: dbName});
+                db = openDatabase(dbargs);
                 ok(!!db, 'valid db object 4/5');
                 db.close(function () {
                   ok(true, 'success 4/5');
 
-                  db = openDatabase({name: dbName});
+                  db = openDatabase(dbargs);
                   ok(!!db, 'valid db object 5/5');
                   db.close(function () {
                     ok(true, 'success 5/5');
@@ -1098,8 +1192,11 @@ var mytests = function() {
         // Needed to support some large-scale applications:
         test_it(suiteName + ' repeatedly open and delete database (4x)', function () {
           var dbName = 'test-repeatedly-open-and-delete-4x.db';
+          /* ** XXX TODO (PREVIOUS BEHAVIOR):
           // TEST with no location value (SUPPORTED in this version branch)
           var dbargs = {name: dbName};
+          // ** */
+          var dbargs = {name: dbName, iosDatabaseLocation: 'Documents'};
 
           // async test coming up
           stop(1);
@@ -1161,37 +1258,38 @@ var mytests = function() {
 
         // Needed to support some large-scale applications:
         test_it(suiteName + ' repeatedly open and delete database faster (5x)', function () {
-          // XXX CURRENTLY BROKEN on iOS due to current background processing implementation
-          if (!(isAndroid || isIE)) pending('CURRENTLY BROKEN on iOS (background processing implementation)');
+          // TBD CURRENTLY BROKEN on iOS/macOS due to current background processing implementation:
+          if (!isAndroid && !isWindows && !isWP8) pending('CURRENTLY BROKEN on iOS/macOS (background processing implementation)');
 
-          var dbName = "repeatedly-open-and-delete-faster-5x.db";
+          var dbName = 'repeatedly-open-and-delete-faster-5x.db';
+          var dbargs = {name: dbName, location: 'default'};
 
           // async test coming up
           stop(1);
 
-          var db = openDatabase({name: dbName});
+          var db = openDatabase(dbargs);
           ok(!!db, 'valid db object 1/5');
-          deleteDatabase({name: dbName}, function () {
+          sqlitePlugin.deleteDatabase(dbargs, function () {
             ok(true, 'success 1/5');
 
-            db = openDatabase({name: dbName});
+            db = openDatabase(dbargs);
             ok(!!db, 'valid db object 2/5');
-            deleteDatabase({name: dbName}, function () {
+            sqlitePlugin.deleteDatabase(dbargs, function () {
               ok(true, 'success 2/5');
 
-              db = openDatabase({name: dbName});
+              db = openDatabase(dbargs);
               ok(!!db, 'valid db object 3/5');
-              deleteDatabase({name: dbName}, function () {
+              sqlitePlugin.deleteDatabase(dbargs, function () {
                 ok(true, 'success 3/5');
 
-                db = openDatabase({name: dbName});
+                db = openDatabase(dbargs);
                 ok(!!db, 'valid db object 4/5');
-                deleteDatabase({name: dbName}, function () {
+                sqlitePlugin.deleteDatabase(dbargs, function () {
                   ok(true, 'success 4/5');
 
-                  db = openDatabase({name: dbName});
+                  db = openDatabase(dbargs);
                   ok(!!db, 'valid db object 5/5');
-                  deleteDatabase({name: dbName}, function () {
+                  sqlitePlugin.deleteDatabase(dbargs, function () {
                     ok(true, 'success 5/5');
 
                     start(1);

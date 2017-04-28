@@ -35,7 +35,8 @@ var mytests = function() {
         if (isWebSql) {
           return window.openDatabase(name, '1.0', 'Test', DEFAULT_SIZE);
         } else {
-          return window.sqlitePlugin.openDatabase(name, '1.0', 'Test', DEFAULT_SIZE);
+          // explicit database location:
+          return window.sqlitePlugin.openDatabase({name: name, location: 'default'});
         }
       }
 

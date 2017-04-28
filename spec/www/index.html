@@ -15,15 +15,14 @@
 
   <!-- [Cordova] source file(s): -->
   <script src="cordova.js"></script>
-  <!-- Needed for Cordova pre-3.0: -->
-  <script src="SQLitePlugin.js"></script>
 
   <!-- spec file(s): -->
   <script src="spec/browser-check-startup.js"></script>
   <script src="spec/self-test.js"></script>
   <script src="spec/db-tx-string-test.js"></script>
-  <script src="spec/basic-sql-tx-test.js"></script>
+  <script src="spec/db-tx-sql-results.js"></script>
   <script src="spec/sql-batch-test.js"></script>
+  <script src="spec/regexp-test.js"></script>
   <script src="spec/db-simultaneous-tx-access-test.js"></script>
   <script src="spec/tx-semantics-test.js"></script>
   <script src="spec/db-tx-value-bindings-test.js"></script>
@@ -33,7 +32,9 @@
 
   <script src="spec/begin-tx-test.js"></script>
   <script src="spec/pre-populated-db-test.js"></script>
+  <!-- XXX REPEATED:
   <script src="spec/regexp-test.js"></script>
+   -->
   <script src="spec/attach-test.js"></script>
   <script src="spec/big-memory-test.js"></script>
 

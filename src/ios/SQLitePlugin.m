@@ -15,7 +15,7 @@
 // Enabled in this version:
 #define READ_BLOB_AS_BASE64
 
-// FUTURE TBD (needs testing):
+// XXX OBSOLETE:
 //#define INCLUDE_SQL_BLOB_BINDING
 
 static void

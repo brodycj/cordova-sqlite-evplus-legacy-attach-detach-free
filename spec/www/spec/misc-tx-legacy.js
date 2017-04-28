@@ -33,8 +33,6 @@ function start(n) {
 var isAndroid = /Android/.test(navigator.userAgent);
 var isWP8 = /IEMobile/.test(navigator.userAgent); // Matches WP(7/8/8.1)
 var isWindows = /Windows /.test(navigator.userAgent); // Windows (8.1)
-var isIE = isWindows || isWP8;
-var isWebKit = !isIE; // TBD [Android or iOS]
 
 // NOTE: While in certain version branches there is no difference between
 // the default Android implementation and implementation #2,
@@ -48,11 +46,14 @@ var scenarioList = [
 
 var scenarioCount = (!!window.hasWebKitBrowser) ? (isAndroid ? 3 : 2) : 1;
 
+// FUTURE TBD (already done in newer version branches):
+// Split this script further
+
 var mytests = function() {
 
   for (var i=0; i<scenarioCount; ++i) {
 
-    describe(scenarioList[i] + ': misc legacy tx test(s)', function() {
+    describe(scenarioList[i] + ': misc general tx test(s)', function() {
       var scenarioName = scenarioList[i];
       var suiteName = scenarioName + ': ';
       var isWebSql = (i === 1);
@@ -64,6 +65,8 @@ var mytests = function() {
           return window.sqlitePlugin.openDatabase({
             // prevent reuse of database from default db implementation:
             name: 'i2-'+name,
+            // explicit database location:
+            location: 'default',
             androidDatabaseImplementation: 2,
             androidLockWorkaround: 1
           });
@@ -71,7 +74,8 @@ var mytests = function() {
         if (isWebSql) {
           return window.openDatabase(name, '1.0', 'Test', DEFAULT_SIZE);
         } else {
-          return window.sqlitePlugin.openDatabase(name, '1.0', 'Test', DEFAULT_SIZE);
+          // explicit database location:
+          return window.sqlitePlugin.openDatabase({name: name, location: 'default'});
         }
       }
 
@@ -92,14 +96,14 @@ var mytests = function() {
               start();
               throw new Error('abort tx');
             }, function(tx, error) {
-              ok(!!error, "valid error object");
+              expect(error).toBeDefined();
+              expect(error.code).toBeDefined();
+              expect(error.message).toBeDefined();
 
-              // XXX ONLY WORKING for iOS version of plugin:
-              if (isWebSql || !(isAndroid || isWindows || isWP8))
-                ok(!!error['code'], "valid error.code exists");
+              // err.hasOwnProperty('message') apparently NOT WORKING on WebKit Web SQL on Android 5.x/... or iOS 10.x/...:
+              if (!isWebSql || isWindows || (isAndroid && (/Android [1-4]/.test(navigator.userAgent))))
+                expect(error.hasOwnProperty('message')).toBe(true);
 
-              // XXX TBD:
-              //ok(error.hasOwnProperty('message'), "error.message exists");
               // XXX ONLY WORKING for iOS version of plugin:
               if (isWebSql || !(isAndroid || isWindows || isWP8))
                 strictEqual(error.code, 5, "error.code === SQLException.SYNTAX_ERR (5)");
@@ -110,16 +114,17 @@ var mytests = function() {
               return true;
             });
           }, function (error) {
-            ok(!!error, "valid error object");
-            // XXX TBD:
-            //ok(error.hasOwnProperty('message'), "error.message exists");
+            expect(error).toBeDefined();
+            expect(error.message).toBeDefined();
+            // err.hasOwnProperty('message') apparently NOT WORKING on WebKit Web SQL on Android 5.x/... or iOS 10.x/...:
+            if (!isWebSql || isWindows || (isAndroid && (/Android [1-4]/.test(navigator.userAgent))))
+              expect(error.hasOwnProperty('message')).toBe(true);
             start();
           });
         });
 
         test_it(suiteName + "constraint violation", function() {
           if (isWindows) pending('BROKEN for Windows'); // XXX TODO
-          //if (isWindowsPhone_8_1) pending('BROKEN for Windows Phone 8.1'); // XXX TODO
 
           var db = openDatabase("Constraint-violation-test.db", "1.0", "Demo", DEFAULT_SIZE);
           ok(!!db, "db object");
@@ -140,14 +145,13 @@ var mytests = function() {
               start();
               throw new Error('abort tx');
             }, function(tx, error) {
-              ok(!!error, "valid error object");
+              expect(error).toBeDefined();
+              expect(error.code).toBeDefined();
+              expect(error.message).toBeDefined();
 
-              // XXX ONLY WORKING for iOS version of plugin:
-              if (isWebSql || !(isAndroid || isWindows || isWP8))
-                ok(!!error['code'], "valid error.code exists");
-
-              // XXX TBD:
+              // err.hasOwnProperty('message') apparently NOT WORKING on WebKit Web SQL on Android 5.x/... or iOS 10.x/...:
               //ok(error.hasOwnProperty('message'), "error.message exists");
+
               //strictEqual(error.code, 6, "error.code === SQLException.CONSTRAINT_ERR (6)");
               //equal(error.message, "Request failed: insert into test_table (data) VALUES (?),123", "error.message");
               start();
@@ -156,8 +160,9 @@ var mytests = function() {
               return true;
             });
           }, function(error) {
-            ok(!!error, "valid error object");
-            // XXX TBD:
+            expect(error).toBeDefined();
+            expect(error.message).toBeDefined();
+            // err.hasOwnProperty('message') apparently NOT WORKING on WebKit Web SQL on Android 5.x/... or iOS 10.x/...:
             //ok(error.hasOwnProperty('message'), "error.message exists");
             start();
           });
@@ -165,7 +170,7 @@ var mytests = function() {
 
       });
 
-      describe(scenarioList[i] + ': insert/update test(s)', function() {
+      describe(scenarioList[i] + ': multiple update test(s)', function() {
 
         // ref: litehelpers/Cordova-sqlite-storage#128
         // Was caused by a failure to create temporary transaction files on WP8.
@@ -224,16 +229,16 @@ var mytests = function() {
 
     for (var i=0; i<scenarioCount; ++i) {
 
-      describe(scenarioList[i] + ': plugin-specific sql test(s)', function() {
+      describe(scenarioList[i] + ': db.executeSql test(s)', function() {
         var scenarioName = scenarioList[i];
         var suiteName = scenarioName + ': ';
         var isImpl2 = (i === 1);
 
         // NOTE: MUST be defined in function scope, NOT outer scope:
         var openDatabase = function(first, second, third, fourth, fifth, sixth) {
-          if (!isImpl2) {
-            return window.sqlitePlugin.openDatabase(first, second, third, fourth, fifth, sixth);
-          }
+          //if (!isImpl2) {
+          //  return window.sqlitePlugin.openDatabase(first, second, third, fourth, fifth, sixth);
+          //}
 
           var dbname, okcb, errorcb;
 
@@ -247,8 +252,15 @@ var mytests = function() {
             errorcb = third;
           }
 
-          dbopts = {
+          if (!isImpl2) {
+            // explicit database location:
+            return window.sqlitePlugin.openDatabase({name: dbname, location: 2}, okcb, errorcb);
+          }
+
+          var dbopts = {
             name: 'i2-'+dbname,
+            // explicit database location:
+            location: 'default',
             androidDatabaseImplementation: 2,
             androidLockWorkaround: 1
           };
@@ -256,10 +268,10 @@ var mytests = function() {
           return window.sqlitePlugin.openDatabase(dbopts, okcb, errorcb);
         }
 
-        test_it(suiteName + "DB String result test", function() {
+        test_it(suiteName + "Multiple db.executeSql string result test", function() {
           // NOTE: this test checks that for db.executeSql(), the result callback is
           // called exactly once, with the proper result:
-          var db = openDatabase("DB-String-result-test.db", "1.0", "Demo", DEFAULT_SIZE);
+          var db = openDatabase("Multiple-DB-sql-String-result-test.db", "1.0", "Demo", DEFAULT_SIZE);
 
           var expected = [ 'FIRST', 'SECOND' ];
           var i=0;
@@ -290,7 +302,98 @@ var mytests = function() {
           db.executeSql("select upper('second') as uppertext", [], okcb);
         });
 
-        test_it(suiteName + "PRAGMAs and multiple databases", function() {
+        it(suiteName + "Multiple db.executeSql error result test", function(done) {
+          // NOTE: this test checks that for db.executeSql(), the error result
+          // callback is called exactly once, with the proper result:
+          var db = openDatabase("Multiple-DB-sql-error-result-test.db", "1.0", "Demo", DEFAULT_SIZE);
+
+          var error_result_count = 0;
+
+          // First: syntax error
+          db.executeSql("SELCT upper('first') AS uppertext", [], function() {
+            // NOT EXPECTED:
+            expect(false).toBe(true);
+          }, function(e) {
+            expect(e).toBeDefined();
+            // FUTURE TBD check error fields
+
+            // CHECK that this was not called before
+            expect(error_result_count).toBe(0);
+            ++error_result_count;
+          });
+
+          // Second: SELECT misspelled function name
+          db.executeSql("SELECT uper('second') as uppertext", [], function() {
+            // NOT EXPECTED:
+            expect(false).toBe(true);
+          }, function(e) {
+            expect(e).toBeDefined();
+            // FUTURE TBD check error fields
+
+            expect(error_result_count).toBe(1);
+            ++error_result_count;
+
+            // and finish this test:
+            done();
+          });
+        });
+
+      });
+    }
+
+  });
+
+  describe('Plugin: more plugin-specific tx test(s)', function() {
+
+    var scenarioList = [
+      isAndroid ? 'Plugin-implementation-default' : 'Plugin',
+      'Plugin-implementation-2'
+    ];
+
+    var scenarioCount = isAndroid ? 2 : 1;
+
+    for (var i=0; i<scenarioCount; ++i) {
+
+      describe(scenarioList[i] + ': db.executeSql test(s)', function() {
+        var scenarioName = scenarioList[i];
+        var suiteName = scenarioName + ': ';
+        var isImpl2 = (i === 1);
+
+        // NOTE: MUST be defined in function scope, NOT outer scope:
+        var openDatabase = function(first, second, third, fourth, fifth, sixth) {
+          //if (!isImpl2) {
+          //  return window.sqlitePlugin.openDatabase(first, second, third, fourth, fifth, sixth);
+          //}
+
+          var dbname, okcb, errorcb;
+
+          if (first.constructor === String ) {
+            dbname = first;
+            okcb = fifth;
+            errorcb = sixth;
+          } else {
+            dbname = first.name;
+            okcb = second;
+            errorcb = third;
+          }
+
+          if (!isImpl2) {
+            // explicit database location:
+            return window.sqlitePlugin.openDatabase({name: dbname, location: 2}, okcb, errorcb);
+          }
+
+          var dbopts = {
+            name: 'i2-'+dbname,
+            // explicit database location:
+            location: 'default',
+            androidDatabaseImplementation: 2,
+            androidLockWorkaround: 1
+          };
+
+          return window.sqlitePlugin.openDatabase(dbopts, okcb, errorcb);
+        }
+
+        test_it(suiteName + "PRAGMAs & multiple database transactions mixed together", function() {
           var db = openDatabase("DB1", "1.0", "Demo", DEFAULT_SIZE);
 
           var db2 = openDatabase("DB2", "1.0", "Demo", DEFAULT_SIZE);

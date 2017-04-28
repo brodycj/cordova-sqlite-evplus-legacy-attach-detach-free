@@ -20,9 +20,11 @@ var mytests = function() {
       // NOTE: MUST be defined in function scope, NOT outer scope:
       var openDatabase = function(name, ignored1, ignored2, ignored3) {
         if (isImpl2) {
-          return window.sqlitePlugin.openDatabase({name: 'i2-'+name, androidDatabaseImplementation: 2});
+          // explicit database location:
+          return window.sqlitePlugin.openDatabase({name: 'i2-'+name, location: 2, androidDatabaseImplementation: 2});
         } else {
-          return window.sqlitePlugin.openDatabase(name, '1.0', 'Test', DEFAULT_SIZE);
+          // explicit database location:
+          return window.sqlitePlugin.openDatabase({name: name, location: 'default'});
         }
       }
 

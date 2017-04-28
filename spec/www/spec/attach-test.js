@@ -30,13 +30,15 @@ var mytests = function() {
       it(suiteName + 'preliminary cleanup 1',
         function(done) {
           expect(true).toBe(true);
-          window.sqlitePlugin.deleteDatabase('attach-test-external.db', done, done);
+          // explicit database location:
+          window.sqlitePlugin.deleteDatabase({name: 'attach-test-external.db', location: 2}, done, done);
         }, MYTIMEOUT);
 
       it(suiteName + 'preliminary cleanup 2',
         function(done) {
           expect(true).toBe(true);
-          window.sqlitePlugin.deleteDatabase('attach-test.db', done, done);
+          // explicit database location:
+          window.sqlitePlugin.deleteDatabase({name: 'attach-test.db', location: 2}, done, done);
         }, MYTIMEOUT);
 
       it(suiteName + 'ATTACH/PRAGMA database_list/DETACH test',
@@ -45,6 +47,8 @@ var mytests = function() {
 
           window.sqlitePlugin.openDatabase({
             name: 'attach-test-external.db',
+            // explicit database location:
+            location: 2,
             androidDatabaseImplementation: isImpl2 ? 2 : 0
           }, function(db1) {
           db1.transaction(function(tx) {
@@ -60,6 +64,8 @@ var mytests = function() {
 
               window.sqlitePlugin.openDatabase({
                 name: 'attach-test.db',
+                // explicit database location:
+                location: 2,
                 androidDatabaseImplementation: isImpl2 ? 2 : 0
               }, function(db2) {
                 db2.attach('ext_attached', 'attach-test-external.db', function() {

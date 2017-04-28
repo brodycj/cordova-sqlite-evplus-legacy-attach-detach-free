@@ -31,7 +31,8 @@ var mytests = function() {
       it(suiteName + 'preliminary cleanup',
         function(done) {
           expect(true).toBe(true);
-          window.sqlitePlugin.deleteDatabase('pre.db', done, done);
+          // explicit database location:
+          window.sqlitePlugin.deleteDatabase({name: 'pre.db', location: 2}, done, done);
         }, MYTIMEOUT);
 
       it(suiteName + 'Pre-populated database test',
@@ -41,6 +42,8 @@ var mytests = function() {
           var dbc1 = window.sqlitePlugin.openDatabase({
             name: 'pre.db',
             createFromLocation: 1,
+            // explicit database location:
+            location: 2,
             androidDatabaseImplementation: isOldDatabaseImpl ? 2 : 0
           });
 
@@ -71,6 +74,8 @@ var mytests = function() {
               var dbc2 = window.sqlitePlugin.openDatabase({
                 name: 'pre.db',
                 createFromLocation: 1,
+                // explicit database location:
+                location: 2,
                 androidDatabaseImplementation: isOldDatabaseImpl ? 2 : 0
               });
 
@@ -100,7 +105,8 @@ var mytests = function() {
       it(suiteName + 'preliminary blob test cleanup',
         function(done) {
           expect(true).toBe(true);
-          window.sqlitePlugin.deleteDatabase('blob-pre.db', done, done);
+          // explicit database location:
+          window.sqlitePlugin.deleteDatabase({name: 'blob-pre.db', location: 2}, done, done);
         }, MYTIMEOUT);
 
       it(suiteName + 'Pre-populated blob database test', function(done) {
@@ -110,6 +116,8 @@ var mytests = function() {
           var dbc1 = window.sqlitePlugin.openDatabase({
             name: 'blob-pre.db',
             createFromLocation: 1,
+            // explicit database location:
+            location: 2,
             androidDatabaseImplementation: isOldDatabaseImpl ? 2 : 0
           });
 
@@ -147,6 +155,8 @@ var mytests = function() {
               var dbc2 = window.sqlitePlugin.openDatabase({
                 name: 'blob-pre.db',
                 createFromLocation: 1,
+                // explicit database location:
+                location: 2,
                 androidDatabaseImplementation: isOldDatabaseImpl ? 2 : 0
               });
 
