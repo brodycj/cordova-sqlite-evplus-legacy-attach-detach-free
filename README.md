@@ -46,6 +46,22 @@ As documented in the "**A User’s iCloud Storage Is Limited**" section of [iClo
 - Status for the target platforms:
   - Android: now using [Android-sqlite-connector](https://github.com/liteglue/Android-sqlite-connector) (with sqlite `3.8.10.2`), with support for FTS3/FTS4 and R-Tree, and REGEXP support using PCRE 8.37 as built from [liteglue / Android-sqlite-native-driver-regexp-pcre](https://github.com/liteglue/Android-sqlite-native-driver-regexp-pcre)
   - iOS/macOS/Windows: sqlite `3.8.10.2` embedded
+- SQLite `3.8.10.2` included in this plugin version, with the following definitions:
+  - `NDEBUG` on Windows (Release build only)
+  - `SQLITE_THREADSAFE=2` on Android/iOS/macOS (`SQLITE_THREADSAFE=1` on Windows)
+  - `SQLITE_DEFAULT_MEMSTATUS=0` (iOS/macOS/Windows)
+  - ~~`SQLITE_OMIT_DECLTYPE`~~ (TBD issue with this option on sqlite 3.8.10.2)
+  - `SQLITE_OMIT_DEPRECATED` (iOS/macOS/Windows)
+  - `SQLITE_OMIT_PROGRESS_CALLBACK` (iOS/macOS/Windows)
+  - `SQLITE_OMIT_SHARED_CACHE` (iOS/macOS/Windows)
+  - `SQLITE_TEMP_STORE=2`
+  - `SQLITE_OMIT_LOAD_EXTENSION` (iOS/macOS/Windows)
+  - `SQLITE_ENABLE_FTS3`
+  - `SQLITE_ENABLE_FTS3_PARENTHESIS`
+  - `SQLITE_ENABLE_FTS4`
+  - `SQLITE_ENABLE_RTREE`
+  - `SQLITE_DEFAULT_PAGE_SIZE=1024` and `SQLITE_DEFAULT_CACHE_SIZE=2000` to avoid FUTURE TBD "potentially distruptive change(s)" from SQLite 3.12.0 ref: <http://sqlite.org/pgszchng2016.html>
+  - `SQLITE_OS_WINRT` (Windows only)
 - Windows version is TBD:
   - Issue with UNICODE `\u0000` character (same as `\0`)
   - No background processing (for future consideration)
