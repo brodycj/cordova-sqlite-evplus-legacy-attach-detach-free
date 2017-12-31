@@ -321,6 +321,7 @@ var mytests = function() {
         test_it(suiteName + ' returns [Unicode] string with \\u0000 correctly', function () {
           if (isWindows) pending('BROKEN on Windows'); // XXX
           if (isWP8) pending('BROKEN on WP(8)'); // [BUG #202] UNICODE characters not working with WP(8)
+          if (isWebSql) pending('SKIP for Web SQL'); // TBD
 
           stop();
 

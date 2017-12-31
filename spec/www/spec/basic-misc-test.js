@@ -54,17 +54,18 @@ var mytests = function() {
         }
       }
 
-        // Known to work with:
+        // Known to work on:
         // - iOS 9 Web SQL
         // - Android-sqlite-connector with newer sqlite3 build (in cordova-sqlite-ext version)
         // - iOS plugin with newer sqlite3 build (also in cordova-sqlite-ext version)
         // - Windows (with newer sqlite3 build)
-        // SKIPPED in this version branch (fow now)
         it(suiteName + 'db readTransaction with a WITH clause', function(done) {
+          // TBD Windows only (for now):
           if (isWP8) pending('NOT IMPLEMENTED for WP(8)');
           if (isWebSql) pending('SKIP for Web SQL'); // NOT WORKING on all versions (Android/iOS)
-          if (isAndroid) pending('SKIP for Android plugin'); // NOT WORKING on all versions (FUTURE TBD Android-sqlite-connetor)
-          if (!(isAndroid || isWindows || isWP8)) pending('SKIP for iOS'); // NOT WORKING on all versions of iOS
+          // TBD ???:
+          if (!isWindows && isAndroid) pending('SKIP on Android plugin');
+          if (!(isAndroid || isWindows || isWP8)) pending('SKIP for iOS/macOS plugin');
 
           var db = openDatabase('tx-with-a-with-clause-test.db', '1.0', 'Test', DEFAULT_SIZE);
 
