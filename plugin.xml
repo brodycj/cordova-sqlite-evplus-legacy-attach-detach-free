@@ -13,6 +13,8 @@
     <description>Native interface to SQLite for PhoneGap/Cordova. Allows you to use more storage and provides more flexibility than the standard Web SQL database (window.openDatabase).</description>
     <author>Litehelpers/Various</author>
 
+    <!-- No before_plugin_install hook in this plugin version -->
+
     <js-module src="www/SQLitePlugin.js" name="SQLitePlugin">
         <clobbers target="SQLitePlugin" />
     </js-module>
