@@ -1117,17 +1117,6 @@ To run from a windows powershell (here is a sample for android target):
 
 **NOTE:** As stated above, patches will *NOT* be accepted on this project due to potential licensing issues. Issues with reproduction scenarios will help maintain and improve the quality of this plugin for future users. (It is also helpful if you have a pointer to the code that is causing the issue.)
 
-**WARNING:** Please do NOT propose changes from your default branch. Contributions may be rebased using `git rebase` or `git cherry-pick` and not merged.
-
-- Patches with bug fixes are helpful, especially when submitted with test code.
-- Other enhancements welcome for consideration, when submitted with test code and are working for all supported platforms. Increase of complexity should be avoided.
-- All contributions may be reused by [@brodybits](https://github.com/brodybits) under another license in the future. Efforts will be taken to give credit for major contributions but it will not be guaranteed.
-- Project restructuring, i.e. moving files and/or directories around, should be avoided if possible.
-- If you see a need for restructuring, it is better to first discuss it in new issue where alternatives can be discussed before reaching a conclusion. If you want to propose a change to the project structure:
-  - Remember to make (and use) a special branch within your fork from which you can send the proposed restructuring;
-  - Always use `git mv` to move files & directories;
-  - Never mix a move/rename operation with any other changes in the same commit.
-
 <!-- END Contributing -->
 
 ## Contact
