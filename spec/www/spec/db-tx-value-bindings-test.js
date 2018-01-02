@@ -253,6 +253,7 @@ var mytests = function() {
         test_it(suiteName + ' stores [Unicode] string with \\u0000 correctly', function () {
           if (isWP8) pending('BROKEN on WP(8)'); // [BUG #202] UNICODE characters not working with WP(8)
           if (isWindows) pending('BROKEN on Windows'); // TBD (truncates on Windows)
+          // XXX BROKEN on Android-sqlite-connector in this version branch:
           if (!isWebSql && !isWindows && isAndroid && !isImpl2) pending('BROKEN on Android-sqlite-connector implementation)');
 
           stop();
@@ -319,8 +320,10 @@ var mytests = function() {
         }
 
         test_it(suiteName + ' returns [Unicode] string with \\u0000 correctly', function () {
-          if (isWindows) pending('BROKEN on Windows'); // XXX
           if (isWP8) pending('BROKEN on WP(8)'); // [BUG #202] UNICODE characters not working with WP(8)
+          if (isWindows) pending('BROKEN on Windows'); // XXX
+          // TBD ???:
+          // if (isWebSql && isAndroid) pending('SKIP on Android Web SQL'); // XXX TBD INCONSISTENT RESULTS Android 4 vs 5
           if (isWebSql) pending('SKIP for Web SQL'); // TBD
 
           stop();
@@ -349,11 +352,13 @@ var mytests = function() {
                     // we would like to know, so the test is coded to fail if it starts
                     // working there.
                     if(isWebSql) {
+                        /* SKIP IN THIS VERSION BRANCH:
                         ok(expected.indexOf(name) === -1, 'field value: ' +
                             JSON.stringify(name) + ' should not be in this until a bug is fixed ' +
                             JSON.stringify(expected));
 
                         equal(name.length, 0, 'length of field === 0'); 
+                        // */
                         start();
                         return;
                     }

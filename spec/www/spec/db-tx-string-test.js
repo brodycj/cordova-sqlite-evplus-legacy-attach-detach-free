@@ -78,6 +78,7 @@ var mytests = function() {
         it(suiteName + ' string encoding test with UNICODE \\u0000', function (done) {
           if (isWP8) pending('BROKEN on WP(8)'); // [BUG #202] UNICODE characters not working with WP(8)
           if (isWindows) pending('BROKEN on Windows'); // TBD (truncates on Windows)
+          // XXX BROKEN on Android-sqlite-connector in this version branch:
           if (!isWebSql && !isWindows && isAndroid && !isImpl2) pending('BROKEN on Android-sqlite-connector implementation)');
 
           var dbName = "Unicode-hex-test";
@@ -226,6 +227,9 @@ var mytests = function() {
         it(suiteName + ' handles UNICODE \\u2028 line separator correctly [string test]', function (done) {
           if (isWP8) pending('BROKEN on WP(8)'); // [BUG #202] UNICODE characters not working with WP(8)
           if (!isWebSql && !isWindows && isAndroid) pending('SKIP for Android plugin (cordova-android 6.x BUG: cordova/cordova-discuss#57)');
+          if (!isWebSql && !isWindows && !isAndroid && !isWP8) pending('SKIP for iOS/macOS plugin (Cordova BUG: CB-9435)');
+          // XXX TBD ???:
+          if (isWebSql && !isWindows && isAndroid) pending('SKIP for Android Web SQL'); // TBD SKIP for Android Web for now
 
           // NOTE: since the above test shows the UNICODE line separator (\u2028)
           // is seen by the sqlite implementation OK, it is now concluded that

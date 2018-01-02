@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2017: Christopher J. Brody (aka Chris Brody)
+ * Copyright (c) 2012-2018: Christopher J. Brody (aka Chris Brody)
  * Copyright (C) 2011 Davide Bertola
  *
  * License for this version: GPL v3 (http://www.gnu.org/licenses/gpl.txt) or commercial license.
@@ -9,6 +9,8 @@
 #import "SQLitePlugin.h"
 
 #import "sqlite3.h"
+
+#import "PSPDFThreadSafeMutableDictionary.h"
 
 #include <regex.h>
 
@@ -59,7 +61,7 @@ sqlite_regexp(sqlite3_context * context, int argc, sqlite3_value ** values) {
     NSLog(@"Initializing SQLitePlugin");
 
     {
-        openDBs = [NSMutableDictionary dictionaryWithCapacity:0];
+        openDBs = [PSPDFThreadSafeMutableDictionary dictionaryWithCapacity:0];
         appDBPaths = [NSMutableDictionary dictionaryWithCapacity:0];
 #if !__has_feature(objc_arc)
         [openDBs retain];
@@ -147,6 +149,7 @@ sqlite_regexp(sqlite3_context * context, int argc, sqlite3_value ** values) {
     NSString *dbname = [self getDBPath:dbfilename at:dblocation];
 
     if (dbname == NULL) {
+        // XXX NOT EXPECTED (INTERNAL ERROR):
         NSLog(@"No db name specified for open");
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"You must specify database name"];
     }
@@ -154,9 +157,14 @@ sqlite_regexp(sqlite3_context * context, int argc, sqlite3_value ** values) {
         NSValue *dbPointer = [openDBs objectForKey:dbfilename];
 
         if (dbPointer != NULL) {
-            NSLog(@"Reusing existing database connection for db name %@", dbfilename);
-            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"a1i"];
-        } else {
+            // NO LONGER EXPECTED due to BUG 666 workaround solution:
+            NSLog(@"INTERNAL ERROR: database already open for db name: %@ (db file name: %@)", dbname, dbfilename);
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString: @"INTERNAL ERROR: database already open"];
+            [self.commandDelegate sendPluginResult:pluginResult callbackId: command.callbackId];
+            return;
+        }
+
+        @synchronized(self) {
             const char *name = [dbname UTF8String];
             sqlite3 *db;
 

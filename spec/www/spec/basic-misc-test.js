@@ -64,6 +64,7 @@ var mytests = function() {
           if (isWP8) pending('NOT IMPLEMENTED for WP(8)');
           if (isWebSql) pending('SKIP for Web SQL'); // NOT WORKING on all versions (Android/iOS)
           // TBD ???:
+          // if (isAndroid && isImpl2) pending('SKIP for android.database implementation'); // NOT SUPPORTED on all android.database versions
           if (!isWindows && isAndroid) pending('SKIP on Android plugin');
           if (!(isAndroid || isWindows || isWP8)) pending('SKIP for iOS/macOS plugin');
 
@@ -237,7 +238,7 @@ var mytests = function() {
         it(suiteName + 'create virtual table using R-Tree', function(done) {
           if (isWebSql) pending('SKIP for (Android/iOS WebKit) Web SQL');
           if (isWP8) pending('NOT IMPLEMENTED for WP(8)'); // NOT IMPLEMENTED in CSharp-SQLite
-          if (isAndroid) pending('NOT IMPLEMENTED for all versions of Android'); // NOT IMPLEMENTED for all versions of Android database (failed in Circle CI)
+          if (isAndroid && isImpl2) pending('NOT IMPLEMENTED for all versions of android.database'); // NOT IMPLEMENTED for all versions of Android database (failed in Circle CI)
 
           var db = openDatabase('virtual-table-using-r-tree.db', '1.0', 'Test', DEFAULT_SIZE);
 

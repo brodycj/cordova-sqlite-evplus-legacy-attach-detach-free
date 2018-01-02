@@ -1,15 +1,71 @@
 # Changes
 
-## cordova-sqlite-evplus-legacy-attach-detach-free 0.8.3-pre5
+## cordova-sqlite-evplus-legacy-attach-detach-free 0.8.3
 
 - Support macOS ("osx") platform in this version branch
 - Drop engines constraint from plugin.xml in this version branch
+
+##### cordova-sqlite-legacy-core 1.0.7
+
+- Add error info text in case of close error on Windows
+- Signal INTERNAL ERROR in case of attempt to reuse db on Windows (should never happen due to workaround solution to BUG 666)
+- SQLITE_DEFAULT_CACHE_SIZE build flag fix for macOS ("osx") and Windows
+
+###### cordova-sqlite-legacy-express-core 1.0.5
+
+- iOS/macOS @synchronized guard for sqlite3_open operation
+- Signal INTERNAL ERROR in case of attempt to reuse db (Android/iOS) (should never happen due to workaround solution to BUG 666)
+
+##### cordova-sqlite-legacy-core 1.0.6
+
+###### cordova-sqlite-legacy-express-core 1.0.4
+
+- Cleaned up workaround solution to BUG 666: close db before opening (ignore close error)
+- android.database end transaction if active before closing (needed for new BUG 666 workaround solution to pass selfTest in case of builtin android.database implementation)
+
+##### cordova-sqlite-legacy-core 1.0.5
+
+###### cordova-sqlite-legacy-express-core 1.0.3
+
+- Resolve Java 6/7/8 concurrent map compatibility issue reported in litehelpers/Cordova-sqlite-storage#726, THANKS to pointer by @NeoLSN (Jason Yang/楊朝傑) in litehelpers/Cordova-sqlite-storage#727.
+- selfTest database cleanup do not ignore close or delete error on any platforms
+
+##### cordova-sqlite-legacy-core 1.0.4
+
+- New workaround solution to BUG 666: close db before opening (ignore close error)
+
+##### cordova-sqlite-legacy-core 1.0.3
+
+- Suppress warnings when building sqlite3.c & PSPDFThreadSafeMutableDictionary.m on iOS/macOS
+
+##### cordova-sqlite-legacy-core 1.0.2
+
+- Fix log in case of transaction waiting for open to finish; doc fixes
+- SQLite XXX build with SQLITE_THREADSAFE=2 on iOS/macOS (SQLITE_THREADSAFE=1 on Android/Windows) and other flag fixes in this version branch to avoid possible malformed database due to multithreaded access ref: litehelpers/Cordova-sqlite-storage#703
+- Windows 10 (UWP) build with /SAFESEH flag on Win32 (x86) target
+
+###### cordova-sqlite-legacy-express-core 1.0.2
+
+- Use PSPDFThreadSafeMutableDictionary for iOS/macOS to avoid threading issue ref: litehelpers/Cordova-sqlite-storage#716
+
+###### cordova-sqlite-legacy-express-core 1.0.1
+
+- Fix bug 666 workaround to trigger ROLLBACK in the next event tick (needed to support version with pre-populated database on Windows)
 
 ###### cordova-sqlite-legacy-express-core 1.0.0
 
 - Workaround solution to BUG litehelpers/Cordova-sqlite-storage#666 (hanging transaction in case of location reload/change)
 - selfTest simulate scenario & test solution to BUG litehelpers/Cordova-sqlite-storage#666 (also includes string test and test of effects of location reload/change in this version branch, along with another internal check)
 - Remove Lawnchair adapter from this version branch
+- Drop engine constraints in package.json & plugin.xml (FROM THIS VERSION BRANCH)
+- Support macOS platform with builtin libsqlite3.dylib framework (IN THIS VERSION BRANCH)
+
+### cordova-sqlite-storage 1.4.0
+
+- Now using cordova-sqlite-storage-dependencies for SQLite 3.8.10.2 Android/iOS/Windows
+- Android-sqlite-connector implementation supported by this version again
+- Enforce minimum cordova-windows version (should be OK in Cordova 6.x)
+- Support Windows 10 along with Windows 8.1/Windows Phone 8.1
 
 ### cordova-sqlite-storage 1.2.2
 
