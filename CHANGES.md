@@ -1,5 +1,9 @@
 # Changes
 
+## cordova-sqlite-evplus-legacy-attach-detach-free 0.8.4
+
+- cordova-sqlite-evplus-legacy-attach-detach-free with SQLITE_THREADSAFE=1 for iOS/macOS ref: litehelpers/Cordova-sqlite-storage#754 (<https://github.com/litehelpers/Cordova-sqlite-storage/issues/754>)
+
 ## cordova-sqlite-evplus-legacy-attach-detach-free 0.8.3
 
 - Support macOS ("osx") platform in this version branch

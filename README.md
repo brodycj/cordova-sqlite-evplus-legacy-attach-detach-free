@@ -65,7 +65,7 @@ As documented in the "**A User’s iCloud Storage Is Limited**" section of [iClo
 - Patches patches will *NOT* be accepted on this project due to potential licensing issues.
 - SQLite `3.8.10.2` included in this plugin version, with the following definitions:
   - `NDEBUG` on Windows (Release build only)
-  - `SQLITE_THREADSAFE=2` on Android/iOS/macOS (`SQLITE_THREADSAFE=1` on Windows)
+  - `SQLITE_THREADSAFE=1` (`SQLITE_THREADSAFE=2` on Android)
   - `SQLITE_DEFAULT_MEMSTATUS=0` (iOS/macOS/Windows)
   - ~~`SQLITE_OMIT_DECLTYPE`~~ (TBD issue with this option on sqlite 3.8.10.2)
   - `SQLITE_OMIT_DEPRECATED` (iOS/macOS/Windows)
